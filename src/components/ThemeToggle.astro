@@ -1,0 +1,26 @@
+<button
+  id="theme-toggle"
+  type="button"
+  class="link-pill"
+  aria-label="Toggle dark and light mode"
+>
+  <span aria-hidden="true">🌓</span>
+  <span class="hidden sm:inline">Theme</span>
+</button>
+
+<script>
+  const button = document.getElementById('theme-toggle');
+
+  const updateTheme = () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    button?.setAttribute('aria-pressed', String(isDark));
+  };
+
+  button?.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    updateTheme();
+  });
+
+  updateTheme();
+</script>

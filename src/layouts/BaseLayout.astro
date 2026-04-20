@@ -1,0 +1,49 @@
+---
+import '@/styles/global.css';
+import { siteConfig, githubProfileImageUrl } from '@/config/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = siteConfig.seo.title, description = siteConfig.seo.description } = Astro.props;
+const canonicalUrl = Astro.url;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={siteConfig.fullName} />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={githubProfileImageUrl} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={githubProfileImageUrl} />
+
+    <script is:inline>
+      (() => {
+        const storedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const shouldUseDark = storedTheme ? storedTheme === 'dark' : systemPrefersDark;
+        document.documentElement.classList.toggle('dark', shouldUseDark);
+      })();
+    </script>
+  </head>
+  <body class="bg-hero-gradient">
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,39 @@
+---
+import SectionTitle from './SectionTitle.astro';
+
+const experienceSummary = [
+  {
+    title: 'Technical Leadership & Team Enablement',
+    notes:
+      'Leading engineering direction, raising quality standards, and mentoring developers for consistent, high-velocity delivery.'
+  },
+  {
+    title: 'Architecture & Scalable Platforms',
+    notes:
+      'Designing robust systems and backend services that support growth, maintainability, and long-term product evolution.'
+  },
+  {
+    title: 'Enterprise Software Delivery',
+    notes:
+      'Collaborating across stakeholders to ship secure, resilient, and business-aligned software in complex environments.'
+  }
+];
+---
+
+<section id="experience" class="section-card">
+  <SectionTitle title="Experience Summary" subtitle="High-level focus areas without inventing employer history." />
+  <div class="space-y-4">
+    {
+      experienceSummary.map((item) => (
+        <article class="rounded-xl border border-slate-200/80 p-4 dark:border-slate-800">
+          <h3 class="font-semibold">{item.title}</h3>
+          <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">{item.notes}</p>
+        </article>
+      ))
+    }
+  </div>
+  <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">
+    {/* Customize this section with verified role history, company names, and dates when available. */}
+    Add specific role timeline details here when final CV data is ready.
+  </p>
+</section>

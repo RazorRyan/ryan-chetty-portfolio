@@ -1,0 +1,38 @@
+---
+import SectionTitle from './SectionTitle.astro';
+
+const skillGroups = [
+  {
+    title: 'Leadership & Architecture',
+    items: ['Technical Leadership', 'Solution Architecture', 'System Design', 'Code Quality Strategy']
+  },
+  {
+    title: 'Backend & APIs',
+    items: ['Service-Oriented Architectures', 'REST API Design', 'Performance Optimization', 'Integration Engineering']
+  },
+  {
+    title: 'Cloud & Delivery',
+    items: ['Cloud Platforms', 'Scalable Infrastructure Patterns', 'CI/CD Practices', 'Observability Mindset']
+  },
+  {
+    title: 'Enterprise Engineering',
+    items: ['Domain Modeling', 'Security-Aware Development', 'Cross-Team Collaboration', 'Technical Roadmapping']
+  }
+];
+---
+
+<section id="skills" class="section-card">
+  <SectionTitle title="Skills / Tech Stack" subtitle="Core strengths for large-scale and enterprise-focused delivery." />
+  <div class="grid gap-4 sm:grid-cols-2">
+    {
+      skillGroups.map((group) => (
+        <article class="rounded-xl border border-slate-200/80 p-4 dark:border-slate-800">
+          <h3 class="font-semibold text-slate-900 dark:text-slate-100">{group.title}</h3>
+          <ul class="mt-3 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
+            {group.items.map((item) => <li>• {item}</li>)}
+          </ul>
+        </article>
+      ))
+    }
+  </div>
+</section>

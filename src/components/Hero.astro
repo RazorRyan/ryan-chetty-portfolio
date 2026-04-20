@@ -1,0 +1,42 @@
+---
+import { siteConfig, githubProfileImageUrl } from '@/config/site';
+
+const mainTagline =
+  'Technical Lead focused on building scalable, high-quality software systems with a strong emphasis on architecture and clean design.';
+---
+
+<section class="grid gap-8 py-10 md:grid-cols-[1.15fr,0.85fr] md:items-center md:py-16" id="home">
+  <div class="space-y-5">
+    <p class="inline-flex rounded-full bg-brand-100 px-3 py-1 text-sm font-semibold text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">
+      Based in {siteConfig.location}
+    </p>
+    <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+      {siteConfig.fullName}
+    </h1>
+    <p class="text-xl font-semibold text-slate-700 dark:text-slate-200">{siteConfig.title}</p>
+    <p class="max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300">{mainTagline}</p>
+
+    <div class="flex flex-wrap gap-3 pt-2">
+      <a href="#projects" class="rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-glow transition hover:bg-brand-500">
+        View Projects
+      </a>
+      <a href="#contact" class="link-pill">Contact Me</a>
+      <a href="#cv" class="link-pill">Download CV</a>
+    </div>
+  </div>
+
+  <div class="mx-auto w-full max-w-sm">
+    <div class="section-card relative overflow-hidden p-6">
+      <div class="absolute -right-12 -top-12 h-36 w-36 rounded-full bg-brand-500/20 blur-3xl"></div>
+      <img
+        src={githubProfileImageUrl}
+        alt={`GitHub profile photo of ${siteConfig.fullName}`}
+        loading="eager"
+        class="mx-auto aspect-square w-52 rounded-2xl border border-slate-200 object-cover shadow-lg dark:border-slate-700"
+      />
+      <p class="mt-5 text-center text-sm text-slate-500 dark:text-slate-400">
+        Profile image sourced automatically from GitHub @{siteConfig.githubUsername}
+      </p>
+    </div>
+  </div>
+</section>
