@@ -1,0 +1,39 @@
+---
+import SectionTitle from './SectionTitle.astro';
+
+const featuredProjects = [
+  {
+    name: 'Enterprise Platform Initiative',
+    description:
+      'Placeholder for a real project summary focused on platform architecture, reliability, and delivery outcomes.',
+    status: 'Add verified case study details'
+  },
+  {
+    name: 'AI-Enabled Solution Delivery',
+    description:
+      'Placeholder for a real project where AI was applied to solve complex domain or operational challenges.',
+    status: 'Add verified metrics and scope'
+  },
+  {
+    name: 'Game Development / Technical Experimentation',
+    description:
+      'Placeholder for selected side-projects or prototypes that demonstrate creativity and engineering depth.',
+    status: 'Add links, stack, and outcomes'
+  }
+];
+---
+
+<section id="projects" class="section-card">
+  <SectionTitle title="Featured Projects" subtitle="Editable placeholders until final project data is provided." />
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    {
+      featuredProjects.map((project) => (
+        <article class="group rounded-xl border border-slate-200/80 p-4 transition hover:-translate-y-1 hover:border-brand-400 dark:border-slate-800 dark:hover:border-brand-500">
+          <h3 class="font-semibold">{project.name}</h3>
+          <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{project.description}</p>
+          <p class="mt-3 text-xs font-medium uppercase tracking-wide text-brand-600 dark:text-brand-300">{project.status}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,18 @@
+---
+import { siteConfig } from '@/config/site';
+import SectionTitle from './SectionTitle.astro';
+---
+
+<section id="about" class="section-card">
+  <SectionTitle title="About Me" subtitle="Engineering leadership, architecture, and scalable delivery." />
+  <div class="space-y-4 text-slate-700 dark:text-slate-300">
+    <p>{siteConfig.coreBio}</p>
+    <p>
+      I bring a product-minded and architecture-first approach to software engineering, balancing technical depth with delivery focus.
+      My work centers on reliable backend systems, modern API design, cloud-native patterns, and maintainable enterprise solutions.
+    </p>
+    <p>
+      I enjoy mentoring teams, setting technical direction, and driving quality through pragmatic standards and clean engineering practices.
+    </p>
+  </div>
+</section>
