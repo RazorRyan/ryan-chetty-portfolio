@@ -30,7 +30,7 @@ Open `http://localhost:4321`.
 
 Update this file:
 
-- `/home/runner/work/ryan-chetty-portfolio/ryan-chetty-portfolio/src/config/site.ts`
+- `src/config/site.ts`
 
 Centralized values include:
 - name
