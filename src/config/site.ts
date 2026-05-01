@@ -5,7 +5,6 @@ export const siteConfig = {
   title: 'Senior Software Engineer / Tech Lead',
   location: 'South Africa',
   email: 'ryan.chetty16@gmail.com',
-  phone: '0734654994',
   githubUsername: 'RazorRyan',
   socialLinks: {
     linkedin: 'https://www.linkedin.com/in/ryan-chetty-89121865/',
