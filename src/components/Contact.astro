@@ -16,11 +16,12 @@ import SectionTitle from './SectionTitle.astro';
         <span aria-hidden="true">📞</span>
         <span>Phone: {siteConfig.phone}</span>
       </a>
-      <a class="link-pill w-full justify-start" href={siteConfig.socialLinks.linkedin} target="_blank" rel="noreferrer">
+      {/* Links use href="#" as safe placeholders; real URLs are set by JS below (light obfuscation, not security). */}
+      <a id="linkedin-link" class="link-pill w-full justify-start" href="#" target="_blank" rel="noreferrer">
         <span aria-hidden="true">🔗</span>
         <span>LinkedIn</span>
       </a>
-      <a class="link-pill w-full justify-start" href={siteConfig.socialLinks.github} target="_blank" rel="noreferrer">
+      <a id="github-link" class="link-pill w-full justify-start" href="#" target="_blank" rel="noreferrer">
         <span aria-hidden="true">💻</span>
         <span>GitHub</span>
       </a>
@@ -41,3 +42,19 @@ import SectionTitle from './SectionTitle.astro';
     </form>
   </div>
 </section>
+
+<script>
+  // Light obfuscation only — this prevents full URLs from appearing in static HTML.
+  // This is NOT a security measure; anyone inspecting the rendered page can still find the URLs.
+  const profileLinks: Record<string, string[]> = {
+    'github-link': ['https://', 'git', 'hub.com/', 'RazorRyan'],
+    'linkedin-link': ['https://', 'www.', 'linkedin.com/in/', 'ryan-chetty-89121865/'],
+  };
+
+  Object.entries(profileLinks).forEach(([id, parts]) => {
+    const el = document.getElementById(id) as HTMLAnchorElement | null;
+    if (el) {
+      el.href = parts.join('');
+    }
+  });
+</script>
