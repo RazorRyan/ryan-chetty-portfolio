@@ -12,10 +12,6 @@ import SectionTitle from './SectionTitle.astro';
         <span aria-hidden="true">✉️</span>
         <span>Email: {siteConfig.email}</span>
       </a>
-      <a class="link-pill w-full justify-start" href={`tel:${siteConfig.phone}`}>
-        <span aria-hidden="true">📞</span>
-        <span>Phone: {siteConfig.phone}</span>
-      </a>
       {/* Links use href="#" as safe placeholders; real URLs are set by JS below (light obfuscation, not security). */}
       <a id="linkedin-link" class="link-pill w-full justify-start" href="#" target="_blank" rel="noreferrer">
         <span aria-hidden="true">🔗</span>
@@ -27,25 +23,30 @@ import SectionTitle from './SectionTitle.astro';
       </a>
     </div>
 
-    <form class="space-y-3 rounded-xl border border-slate-200/80 p-4 dark:border-slate-800" action="#" method="post">
-      {/* Replace this static-safe placeholder form with Formspree, Cloudflare Forms, or custom API integration. */}
+    <form id="contact-form" class="space-y-3 rounded-xl border border-slate-200/80 p-4 dark:border-slate-800">
+      <input type="hidden" name="_captcha" value="false" />
+
       <label class="block text-sm font-medium" for="name">Name</label>
-      <input id="name" name="name" type="text" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 transition focus:ring dark:border-slate-700 dark:bg-slate-900" placeholder="Your name" />
+      <input id="name" name="name" type="text" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 transition focus:ring dark:border-slate-700 dark:bg-slate-900" placeholder="Your name" />
 
       <label class="block text-sm font-medium" for="email">Email</label>
-      <input id="email" name="email" type="email" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 transition focus:ring dark:border-slate-700 dark:bg-slate-900" placeholder="you@example.com" />
+      <input id="email" name="email" type="email" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 transition focus:ring dark:border-slate-700 dark:bg-slate-900" placeholder="you@example.com" />
+
+      <label class="block text-sm font-medium" for="subject">Subject</label>
+      <input id="subject" name="subject" type="text" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 transition focus:ring dark:border-slate-700 dark:bg-slate-900" placeholder="Subject" />
 
       <label class="block text-sm font-medium" for="message">Message</label>
-      <textarea id="message" name="message" rows="4" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 transition focus:ring dark:border-slate-700 dark:bg-slate-900" placeholder="Tell me about your project or role"></textarea>
+      <textarea id="message" name="message" rows="4" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 transition focus:ring dark:border-slate-700 dark:bg-slate-900" placeholder="Tell me about your project or role"></textarea>
 
-      <button type="submit" class="rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-500">Send Message (UI Placeholder)</button>
+      <div id="form-status" class="hidden rounded-lg px-4 py-2 text-sm font-medium" role="alert" aria-live="polite"></div>
+
+      <button id="submit-btn" type="submit" class="rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-500 disabled:opacity-60">Send Message</button>
     </form>
   </div>
 </section>
 
 <script>
   // Light obfuscation only — this prevents full URLs from appearing in static HTML.
-  // This is NOT a security measure; anyone inspecting the rendered page can still find the URLs.
   const profileLinks: Record<string, string[]> = {
     'github-link': ['https://', 'git', 'hub.com/', 'RazorRyan'],
     'linkedin-link': ['https://', 'www.', 'linkedin.com/in/', 'ryan-chetty-89121865/'],
@@ -53,8 +54,54 @@ import SectionTitle from './SectionTitle.astro';
 
   Object.entries(profileLinks).forEach(([id, parts]) => {
     const el = document.getElementById(id) as HTMLAnchorElement | null;
-    if (el) {
-      el.href = parts.join('');
+    if (el) el.href = parts.join('');
+  });
+
+  // Contact form — FormSubmit AJAX
+  const endpoint = ['https://formsubmit.co/ajax/', 'ryan', '.chetty16', '@gmail.com'].join('');
+
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const statusEl = document.getElementById('form-status') as HTMLElement | null;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+
+  function showStatus(message: string, success: boolean) {
+    if (!statusEl) return;
+    statusEl.textContent = message;
+    statusEl.className = [
+      'rounded-lg px-4 py-2 text-sm font-medium',
+      success
+        ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
+        : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300',
+    ].join(' ');
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form || !submitBtn) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    if (statusEl) statusEl.className = 'hidden';
+
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      const data = await res.json();
+      if (data.success === 'true') {
+        showStatus('\u2705 Message sent! I\u2019ll get back to you soon.', true);
+        form.reset();
+      } else {
+        showStatus('❌ Something went wrong. Please try again or email me directly.', false);
+      }
+    } catch {
+      showStatus('❌ Network error. Please try again or email me directly.', false);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send Message';
     }
   });
 </script>
+
