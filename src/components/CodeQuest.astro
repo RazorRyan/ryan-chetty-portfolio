@@ -524,34 +524,88 @@ import SectionTitle from './SectionTitle.astro';
     }
     function playBump(): void { beep(110, 0.09, 0.04, 'sine'); }
 
-    // ─── BACKGROUND MUSIC ─────────────────────────────────────────────────────
-    // A minor pentatonic: A3 C4 D4 E4 G4 A4 C5 D5
-    const MUSIC_FREQS = [220.00, 261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33];
-    const BASS_FREQS  = [110.00, 130.81, 146.83, 164.81, 196.00]; // A2 C3 D3 E3 G3
-    // Gentle arpeggio melody (indices into MUSIC_FREQS)
-    const MELODY_STEPS = [2,4,5,4, 3,4,2,0, 5,6,5,4, 3,2,1,2, 4,5,7,5, 4,3,5,4, 2,0,1,2, 3,4,5,3];
-    const BASS_DEGS    = [0, 0, 2, 3]; // index into BASS_FREQS, cycles every 2 beats
-    const BEAT_DUR     = 60.0 / 88.0;  // seconds per beat @ 88 BPM
-    const HALF_BEAT    = BEAT_DUR / 2;
-    const LOOK_AHEAD   = 0.28;         // seconds to schedule ahead
+    // ─── BACKGROUND MUSIC: Contra Stage 1 "Jungle" Theme Recreation ───────────
+    // Inspired by Contra (Konami NES, 1988) Stage 1 BGM
+    // Key: D minor  |  BPM: 160  |  Waveform: square (NES pulse) + triangle (NES bass)
+
+    const CONTRA_BPM  = 160;
+    const S16         = 60 / CONTRA_BPM / 4;  // ~0.09375 s per 16th note
+    const MUSIC_AHEAD = 0.28;                  // seconds to schedule ahead
+
+    // ── Frequency table (Hz) ──
+    const _D3=146.83,_F3=174.61,_G3=196.00,_A3=220.00,_Bb3=233.08;
+    const _C4=261.63,_D4=293.66,_E4=329.63,_F4=349.23,_G4=392.00,_A4=440.00,_Bb4=466.16;
+    const _C5=523.25,_D5=587.33,_E5=659.25,_F5=698.46,_G5=783.99,_A5=880.00,_Bb5=932.33;
+    const _B5=987.77,_C6=1046.50,_D6=1174.66,_E6=1318.51;
+
+    // ── Melody: [freq_hz, 16th_note_count]  (0 = rest) ──
+    type MusicNote = [number, number];
+
+    const CONTRA_MEL: MusicNote[] = [
+      // ─ Phrase A: D minor ascending triad motif ("da-da-da, F-A") ─
+      [_D5,2],[_D5,2],[_D5,2],[_F5,1],[_A5,3],  // d d d f. a…
+      [_G5,2],[_F5,2],[_E5,2],[_D5,2],           // g f e d
+      [_D5,2],[_D5,2],[_D5,2],[_F5,1],[_A5,3],   // repeat
+      [_G5,2],[_F5,2],[_E5,6],                   // g f e……
+      // ─ Phrase B: sequence up a 5th (A minor) ─
+      [_A5,2],[_A5,2],[_A5,2],[_C6,1],[_E6,3],   // a a a c. e…
+      [_D6,2],[_C6,2],[_B5,2],[_A5,2],           // d c b a
+      [_A5,2],[_A5,2],[_A5,2],[_C6,1],[_E6,3],   // repeat
+      [_D6,2],[_C6,2],[_B5,6],                   // d c b……
+      // ─ Phrase C: F major bridge ─
+      [_F5,2],[_G5,2],[_A5,2],[_Bb5,2],          // f g a bb
+      [_C6,4],[_Bb5,2],[_A5,2],                  // c… bb a
+      [_G5,2],[_F5,4],[_G5,2],                   // g f…  g
+      [_A5,8],                                   // a………
+      // ─ Phrase D: descending chromatic run back to root ─
+      [_A5,2],[_G5,2],[_F5,2],[_E5,2],           // a g f e
+      [_D5,2],[_C5,2],[_Bb4,2],[_A4,2],          // d c bb a
+      [_G4,2],[_F4,2],[_E4,2],[_D4,2],           // g f e d
+      [_D4,8],                                   // d……… (hold)
+      // ─ Phrase E: ascending fanfare → loop ─
+      [_D5,2],[_F5,2],[_A5,2],[_D6,2],           // d f a d
+      [_C6,2],[_Bb5,2],[_A5,2],[_G5,2],          // c bb a g
+      [_F5,2],[_G5,2],[_A5,2],[_C6,2],           // f g a c
+      [_D6,8],                                   // d……… (hold → loop)
+    ];
+
+    // ── Bass: steady 8th-note tonic/5th (NES triangle channel) ──
+    const CONTRA_BASS: MusicNote[] = [
+      // Phrase A: D–A ostinato (×16 notes = 4 bars)
+      [_D3,2],[_A3,2],[_D3,2],[_A3,2],[_D3,2],[_A3,2],[_D3,2],[_A3,2],
+      [_D3,2],[_A3,2],[_D3,2],[_A3,2],[_D3,2],[_A3,2],[_D3,2],[_A3,2],
+      // Phrase B: A–E ostinato
+      [_A3,2],[_E4,2],[_A3,2],[_E4,2],[_A3,2],[_E4,2],[_A3,2],[_E4,2],
+      [_A3,2],[_E4,2],[_A3,2],[_E4,2],[_A3,2],[_E4,2],[_A3,2],[_E4,2],
+      // Phrase C: F–C / Bb–F
+      [_F3,2],[_C4,2],[_F3,2],[_C4,2],[_Bb3,2],[_F4,2],[_Bb3,2],[_F4,2],
+      [_F3,2],[_C4,2],[_F3,2],[_C4,2],[_Bb3,2],[_F4,2],[_Bb3,2],[_F4,2],
+      // Phrase D+E: A7 resolve → D
+      [_A3,2],[_E4,2],[_A3,2],[_E4,2],[_D3,2],[_A3,2],[_D3,2],[_A3,2],
+      [_G3,2],[_D4,2],[_G3,2],[_D4,2],[_D3,2],[_A3,2],[_D3,2],[_A3,2],
+      [_D3,2],[_F3,2],[_A3,2],[_D4,2],[_A3,2],[_F3,2],[_A3,2],[_D4,2],
+      [_D3,2],[_A3,2],[_D3,2],[_A3,2],[_D3,2],[_A3,2],[_D3,2],[_A3,2],
+    ];
 
     let musicTimerId: number | null = null;
-    let nextNoteTime = 0.0;
-    let musicStep    = 0;
+    let melodyIdx      = 0;
+    let bassIdx        = 0;
+    let nextMelodyTime = 0.0;
+    let nextBassTime   = 0.0;
 
     function playMusicNote(freq: number, t: number, dur: number, type: OscillatorType, vol: number): void {
       try {
-        const ac = getAC();
+        const ac   = getAC();
         const osc  = ac.createOscillator();
         const gain = ac.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, t);
         gain.gain.setValueAtTime(0, t);
-        gain.gain.linearRampToValueAtTime(vol, t + Math.min(0.04, dur * 0.15));
-        gain.gain.setValueAtTime(vol * 0.75, t + dur * 0.65);
+        gain.gain.linearRampToValueAtTime(vol, t + Math.min(0.01, dur * 0.1));
+        gain.gain.setValueAtTime(vol * 0.8, t + dur * 0.6);
         gain.gain.linearRampToValueAtTime(0, t + dur);
         osc.connect(gain); gain.connect(ac.destination);
-        osc.start(t); osc.stop(t + dur + 0.02);
+        osc.start(t); osc.stop(t + dur + 0.01);
       } catch { /* ignore */ }
     }
 
@@ -560,33 +614,33 @@ import SectionTitle from './SectionTitle.astro';
       try {
         const ac  = getAC();
         const now = ac.currentTime;
-        if (nextNoteTime < now) nextNoteTime = now;
-        while (nextNoteTime < now + LOOK_AHEAD) {
-          const t = nextNoteTime;
-          // Melody (triangle – warm)
-          const mFreq = MUSIC_FREQS[MELODY_STEPS[musicStep % MELODY_STEPS.length]];
-          playMusicNote(mFreq, t, HALF_BEAT * 0.72, 'triangle', 0.026);
-          // Bass (sine – every 4 half-beats = 2 full beats)
-          if (musicStep % 4 === 0) {
-            const bFreq = BASS_FREQS[BASS_DEGS[Math.floor(musicStep / 4) % BASS_DEGS.length]];
-            playMusicNote(bFreq, t, BEAT_DUR * 1.85, 'sine', 0.038);
-          }
-          // Ambient chord pad (Am: A+C+E) – every 32 half-beats = 16 beats
-          if (musicStep % 32 === 0) {
-            [BASS_FREQS[0] * 2, BASS_FREQS[1] * 2, MUSIC_FREQS[3]].forEach(f => {
-              playMusicNote(f, t, BEAT_DUR * 14, 'sine', 0.011);
-            });
-          }
-          musicStep++;
-          nextNoteTime += HALF_BEAT;
+        if (nextMelodyTime < now) nextMelodyTime = now;
+        if (nextBassTime   < now) nextBassTime   = now;
+        // Melody — NES pulse (square wave)
+        while (nextMelodyTime < now + MUSIC_AHEAD) {
+          const [freq, dur16] = CONTRA_MEL[melodyIdx % CONTRA_MEL.length];
+          const durSec = dur16 * S16;
+          if (freq > 0) playMusicNote(freq, nextMelodyTime, durSec * 0.82, 'square', 0.028);
+          nextMelodyTime += durSec;
+          melodyIdx++;
+        }
+        // Bass — NES triangle wave
+        while (nextBassTime < now + MUSIC_AHEAD) {
+          const [freq, dur16] = CONTRA_BASS[bassIdx % CONTRA_BASS.length];
+          const durSec = dur16 * S16;
+          if (freq > 0) playMusicNote(freq, nextBassTime, durSec * 0.65, 'triangle', 0.030);
+          nextBassTime += durSec;
+          bassIdx++;
         }
       } catch { /* ignore */ }
     }
 
     function startMusic(): void {
       if (musicTimerId !== null) return;
-      nextNoteTime = 0;
-      musicStep    = 0;
+      melodyIdx = 0;
+      bassIdx = 0;
+      nextMelodyTime = 0;
+      nextBassTime = 0;
       musicTimerId = window.setInterval(scheduleMusicBatch, 80);
     }
     function stopMusic(): void {
