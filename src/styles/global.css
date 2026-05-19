@@ -2,8 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════
+   BASE — Dark arcade default
+═══════════════════════════════════════════════════ */
+
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 .dark {
@@ -12,45 +16,648 @@
 
 html,
 body {
-  @apply m-0 min-h-full bg-slate-50 text-slate-900 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
+  @apply m-0 min-h-full antialiased;
   font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #080818;
+  color: #e2e8f0;
+}
+
+/* Retro arcade grid + radial glows */
+body {
+  background-image:
+    linear-gradient(rgba(0, 245, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 245, 255, 0.04) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 0%, rgba(0, 245, 255, 0.09) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(191, 95, 255, 0.06) 0%, transparent 55%);
+  background-size: 40px 40px, 40px 40px, 100% 60%, 100% 60%;
+  background-attachment: fixed;
+}
+
+/* Light mode overrides */
+html:not(.dark) body {
+  background-color: #f0f4ff;
+  color: #1e1e3f;
+  background-image:
+    linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 0%, rgba(79, 70, 229, 0.08) 0%, transparent 55%);
+  background-size: 40px 40px, 40px 40px, 100% 60%;
 }
 
 main {
   @apply mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6 lg:px-8;
 }
 
+/* ═══════════════════════════════════════════════════
+   SECTION CARD — Main retro panel
+═══════════════════════════════════════════════════ */
+
 .section-card {
-  @apply rounded-2xl border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur transition-all duration-300 dark:border-slate-800 dark:bg-slate-900/80;
+  position: relative;
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  background: rgba(13, 13, 46, 0.88);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(12px);
+  transition: border-color 300ms, box-shadow 300ms;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(0, 245, 255, 0.08);
 }
 
-.link-pill {
-  @apply inline-flex items-center gap-2 rounded-full border border-slate-300/80 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-500 hover:text-brand-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-brand-400 dark:hover:text-brand-300;
+.section-card:hover {
+  border-color: rgba(0, 245, 255, 0.38);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(0, 245, 255, 0.08),
+    inset 0 1px 0 rgba(0, 245, 255, 0.12);
 }
+
+html:not(.dark) .section-card {
+  border-color: rgba(79, 70, 229, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(79, 70, 229, 0.08);
+}
+
+html:not(.dark) .section-card:hover {
+  border-color: rgba(79, 70, 229, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 0 20px rgba(79, 70, 229, 0.06);
+}
+
+/* Corner accent marks */
+.section-card::before,
+.section-card::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-color: rgba(0, 245, 255, 0.5);
+  border-style: solid;
+}
+
+.section-card::before {
+  top: -1px;
+  left: -1px;
+  border-width: 2px 0 0 2px;
+  border-radius: 0.25rem 0 0 0;
+}
+
+.section-card::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 2px 2px 0;
+  border-radius: 0 0 0.25rem 0;
+}
+
+html:not(.dark) .section-card::before,
+html:not(.dark) .section-card::after {
+  border-color: rgba(79, 70, 229, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════
+   HUD PANEL — Hero profile card
+═══════════════════════════════════════════════════ */
+
+.hud-panel {
+  border: 1px solid rgba(0, 245, 255, 0.28);
+  background: rgba(8, 8, 40, 0.96);
+  border-radius: 0.5rem;
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.08), inset 0 0 32px rgba(0, 0, 0, 0.4);
+}
+
+html:not(.dark) .hud-panel {
+  border-color: rgba(79, 70, 229, 0.28);
+  background: rgba(248, 250, 255, 0.96);
+}
+
+/* ═══════════════════════════════════════════════════
+   PIXEL FONT LABELS
+═══════════════════════════════════════════════════ */
+
+.pixel-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ═══════════════════════════════════════════════════
+   NEON TEXT HELPERS
+═══════════════════════════════════════════════════ */
+
+.neon-cyan {
+  color: #00f5ff;
+  text-shadow:
+    0 0 6px rgba(0, 245, 255, 0.8),
+    0 0 14px rgba(0, 245, 255, 0.4);
+}
+
+.neon-magenta {
+  color: #ff2d78;
+  text-shadow:
+    0 0 6px rgba(255, 45, 120, 0.8),
+    0 0 14px rgba(255, 45, 120, 0.4);
+}
+
+.neon-yellow {
+  color: #ffd700;
+  text-shadow:
+    0 0 6px rgba(255, 215, 0, 0.8),
+    0 0 14px rgba(255, 215, 0, 0.4);
+}
+
+.neon-green {
+  color: #39ff14;
+  text-shadow:
+    0 0 6px rgba(57, 255, 20, 0.8),
+    0 0 14px rgba(57, 255, 20, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════
+   GRADIENT TEXT
+═══════════════════════════════════════════════════ */
 
 .gradient-text {
-  @apply bg-gradient-to-r from-brand-600 to-cyan-500 bg-clip-text text-transparent;
+  background: linear-gradient(135deg, #00f5ff 0%, #bf5fff 50%, #ff2d78 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
-.quest-chip {
-  @apply inline-flex items-center gap-2 rounded-xl border border-slate-300/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 transition duration-300 hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-600 hover:shadow-glow dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:border-brand-400 dark:hover:text-brand-300;
+html:not(.dark) .gradient-text {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
 }
+
+/* ═══════════════════════════════════════════════════
+   LINK PILL
+═══════════════════════════════════════════════════ */
+
+.link-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(0, 245, 255, 0.9);
+  transition: all 200ms;
+  background: rgba(0, 245, 255, 0.05);
+}
+
+.link-pill:hover {
+  border-color: #00f5ff;
+  color: #00f5ff;
+  background: rgba(0, 245, 255, 0.12);
+  box-shadow: 0 0 12px rgba(0, 245, 255, 0.2), 3px 3px 0 rgba(0, 245, 255, 0.3);
+  transform: translate(-1px, -1px);
+}
+
+html:not(.dark) .link-pill {
+  border-color: rgba(79, 70, 229, 0.3);
+  color: rgba(79, 70, 229, 0.9);
+  background: rgba(79, 70, 229, 0.05);
+}
+
+html:not(.dark) .link-pill:hover {
+  border-color: #4f46e5;
+  color: #4f46e5;
+  background: rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 12px rgba(79, 70, 229, 0.2), 3px 3px 0 rgba(79, 70, 229, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════
+   QUEST CHIP — Navigation action buttons
+═══════════════════════════════════════════════════ */
+
+.quest-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid rgba(0, 245, 255, 0.28);
+  background: rgba(0, 245, 255, 0.05);
+  color: rgba(0, 245, 255, 0.9);
+  border-radius: 0.25rem;
+  transition: all 180ms ease;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+}
+
+.quest-chip:hover {
+  border-color: #00f5ff;
+  background: rgba(0, 245, 255, 0.12);
+  color: #00f5ff;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 rgba(0, 245, 255, 0.4), 0 0 12px rgba(0, 245, 255, 0.2);
+}
+
+.quest-chip:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 rgba(0, 245, 255, 0.4);
+}
+
+html:not(.dark) .quest-chip {
+  border-color: rgba(79, 70, 229, 0.28);
+  background: rgba(79, 70, 229, 0.05);
+  color: rgba(79, 70, 229, 0.9);
+}
+
+html:not(.dark) .quest-chip:hover {
+  border-color: #4f46e5;
+  background: rgba(79, 70, 229, 0.1);
+  color: #4f46e5;
+  box-shadow: 4px 4px 0 rgba(79, 70, 229, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════
+   GAME PANEL — 3D tilt surface
+═══════════════════════════════════════════════════ */
 
 .game-panel {
   transform-style: preserve-3d;
   transition: transform 180ms ease;
 }
 
+/* ═══════════════════════════════════════════════════
+   GLOW ORB — Floating background decorations
+═══════════════════════════════════════════════════ */
+
 .glow-orb {
   animation: float 4s ease-in-out infinite;
 }
 
+/* ═══════════════════════════════════════════════════
+   ARCADE BUTTON
+═══════════════════════════════════════════════════ */
+
+.btn-arcade {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 2px solid #00f5ff;
+  color: #00f5ff;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 150ms ease;
+  box-shadow: 4px 4px 0 rgba(0, 245, 255, 0.45);
+  text-shadow: 0 0 8px rgba(0, 245, 255, 0.6);
+}
+
+.btn-arcade:hover,
+.btn-arcade:focus-visible {
+  background: rgba(0, 245, 255, 0.15);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 rgba(0, 245, 255, 0.45), 0 0 16px rgba(0, 245, 255, 0.25);
+}
+
+.btn-arcade:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(0, 245, 255, 0.45);
+}
+
+.btn-arcade-magenta {
+  border-color: #ff2d78;
+  color: #ff2d78;
+  box-shadow: 4px 4px 0 rgba(255, 45, 120, 0.45);
+  text-shadow: 0 0 8px rgba(255, 45, 120, 0.6);
+}
+
+.btn-arcade-magenta:hover {
+  background: rgba(255, 45, 120, 0.15);
+  box-shadow: 6px 6px 0 rgba(255, 45, 120, 0.45), 0 0 16px rgba(255, 45, 120, 0.25);
+}
+
+.btn-arcade-yellow {
+  border-color: #ffd700;
+  color: #ffd700;
+  box-shadow: 4px 4px 0 rgba(255, 215, 0, 0.45);
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+.btn-arcade-yellow:hover {
+  background: rgba(255, 215, 0, 0.15);
+  box-shadow: 6px 6px 0 rgba(255, 215, 0, 0.45), 0 0 16px rgba(255, 215, 0, 0.25);
+}
+
+html:not(.dark) .btn-arcade {
+  border-color: #4f46e5;
+  color: #4f46e5;
+  box-shadow: 4px 4px 0 rgba(79, 70, 229, 0.4);
+  text-shadow: none;
+}
+
+html:not(.dark) .btn-arcade:hover {
+  background: rgba(79, 70, 229, 0.12);
+  box-shadow: 6px 6px 0 rgba(79, 70, 229, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════
+   STAT BAR — XP / attribute bars
+═══════════════════════════════════════════════════ */
+
+.stat-bar-track {
+  height: 8px;
+  border-radius: 2px;
+  background: rgba(0, 245, 255, 0.1);
+  border: 1px solid rgba(0, 245, 255, 0.18);
+  overflow: hidden;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00f5ff 0%, #bf5fff 100%);
+  box-shadow: 0 0 6px rgba(0, 245, 255, 0.55);
+  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.stat-bar-fill-yellow {
+  background: linear-gradient(90deg, #ffd700 0%, #ff6b35 100%);
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.55);
+}
+
+.stat-bar-fill-green {
+  background: linear-gradient(90deg, #39ff14 0%, #00f5ff 100%);
+  box-shadow: 0 0 6px rgba(57, 255, 20, 0.55);
+}
+
+html:not(.dark) .stat-bar-track {
+  background: rgba(79, 70, 229, 0.1);
+  border-color: rgba(79, 70, 229, 0.18);
+}
+
+html:not(.dark) .stat-bar-fill {
+  background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+  box-shadow: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   SKILL BADGE — Inventory item chip
+═══════════════════════════════════════════════════ */
+
+.skill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(0, 245, 255, 0.22);
+  background: rgba(0, 245, 255, 0.06);
+  color: rgba(0, 245, 255, 0.9);
+  border-radius: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  transition: all 150ms;
+}
+
+.skill-badge:hover {
+  border-color: rgba(0, 245, 255, 0.55);
+  background: rgba(0, 245, 255, 0.14);
+  box-shadow: 0 0 8px rgba(0, 245, 255, 0.2);
+}
+
+html:not(.dark) .skill-badge {
+  border-color: rgba(79, 70, 229, 0.22);
+  background: rgba(79, 70, 229, 0.06);
+  color: rgba(79, 70, 229, 0.9);
+}
+
+html:not(.dark) .skill-badge:hover {
+  border-color: rgba(79, 70, 229, 0.5);
+  background: rgba(79, 70, 229, 0.12);
+}
+
+/* ═══════════════════════════════════════════════════
+   ACHIEVEMENT CARD
+═══════════════════════════════════════════════════ */
+
+.achievement-card {
+  position: relative;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  background: rgba(20, 15, 5, 0.85);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  transition: all 200ms ease;
+}
+
+.achievement-card:hover {
+  border-color: rgba(255, 215, 0, 0.5);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 16px rgba(255, 215, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+html:not(.dark) .achievement-card {
+  border-color: rgba(245, 158, 11, 0.25);
+  background: rgba(255, 251, 235, 0.9);
+}
+
+html:not(.dark) .achievement-card:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════
+   LEVEL CARD — Project level select
+═══════════════════════════════════════════════════ */
+
+.level-card {
+  position: relative;
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  background: rgba(13, 13, 46, 0.9);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  transition: all 200ms ease;
+  overflow: hidden;
+}
+
+.level-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.4), transparent);
+  transition: opacity 200ms;
+  opacity: 0;
+}
+
+.level-card:hover {
+  border-color: rgba(0, 245, 255, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 16px rgba(0, 245, 255, 0.1);
+}
+
+.level-card:hover::before {
+  opacity: 1;
+}
+
+html:not(.dark) .level-card {
+  border-color: rgba(79, 70, 229, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+html:not(.dark) .level-card:hover {
+  border-color: rgba(79, 70, 229, 0.5);
+}
+
+html:not(.dark) .level-card::before {
+  background: linear-gradient(90deg, transparent, rgba(79, 70, 229, 0.4), transparent);
+}
+
+/* ═══════════════════════════════════════════════════
+   DIALOG BOX — NPC-style speech box
+═══════════════════════════════════════════════════ */
+
+.dialog-box {
+  border: 2px solid rgba(0, 245, 255, 0.35);
+  border-radius: 0.5rem;
+  background: rgba(8, 8, 40, 0.95);
+  padding: 1.25rem;
+  position: relative;
+  box-shadow: 0 0 24px rgba(0, 245, 255, 0.08), inset 0 0 24px rgba(0, 0, 0, 0.4);
+}
+
+.dialog-box::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(0, 245, 255, 0.08);
+  border-radius: 0.35rem;
+  pointer-events: none;
+}
+
+html:not(.dark) .dialog-box {
+  border-color: rgba(79, 70, 229, 0.35);
+  background: rgba(248, 250, 255, 0.97);
+  box-shadow: 0 0 24px rgba(79, 70, 229, 0.06);
+}
+
+html:not(.dark) .dialog-box::before {
+  border-color: rgba(79, 70, 229, 0.08);
+}
+
+/* ═══════════════════════════════════════════════════
+   CURSOR BLINK
+═══════════════════════════════════════════════════ */
+
+.cursor-blink {
+  display: inline-block;
+  animation: blink 1.2s step-end infinite;
+}
+
+/* ═══════════════════════════════════════════════════
+   FORM INPUTS — arcade styled
+═══════════════════════════════════════════════════ */
+
+.arcade-input {
+  width: 100%;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(0, 245, 255, 0.25);
+  background: rgba(8, 8, 40, 0.8);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #e2e8f0;
+  outline: none;
+  transition: all 200ms;
+}
+
+.arcade-input::placeholder {
+  color: rgba(0, 245, 255, 0.35);
+}
+
+.arcade-input:focus {
+  border-color: rgba(0, 245, 255, 0.6);
+  box-shadow: 0 0 0 2px rgba(0, 245, 255, 0.15), 0 0 12px rgba(0, 245, 255, 0.1);
+}
+
+html:not(.dark) .arcade-input {
+  border-color: rgba(79, 70, 229, 0.25);
+  background: rgba(255, 255, 255, 0.9);
+  color: #1e1e3f;
+}
+
+html:not(.dark) .arcade-input::placeholder {
+  color: rgba(79, 70, 229, 0.35);
+}
+
+html:not(.dark) .arcade-input:focus {
+  border-color: rgba(79, 70, 229, 0.6);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════
+   SCANLINES OVERLAY
+═══════════════════════════════════════════════════ */
+
+.scanlines {
+  position: relative;
+}
+
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.025) 2px,
+    rgba(0, 0, 0, 0.025) 4px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ═══════════════════════════════════════════════════
+   KEYFRAMES
+═══════════════════════════════════════════════════ */
+
 @keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
+  0%, 100% {
+    transform: translateY(0);
   }
   50% {
     transform: translateY(-8px);
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.25);
   }
 }

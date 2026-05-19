@@ -1,36 +1,92 @@
 ---
 import SectionTitle from './SectionTitle.astro';
 
-const experienceSummary = [
+const achievements = [
   {
+    icon: '👑',
+    badge: 'ACHIEVEMENT UNLOCKED',
     title: 'Technical Leadership & Team Enablement',
-    notes:
-      'Leading engineering direction, raising quality standards, and mentoring developers for consistent, high-velocity delivery.'
+    description:
+      'Led engineering direction, raised quality standards, and mentored developers for consistent, high-velocity delivery.',
+    unlocks: ['Engineering Direction', 'Code Review Culture', 'Mentorship', 'Velocity'],
+    xp: 5000,
   },
   {
+    icon: '🏛️',
+    badge: 'ACHIEVEMENT UNLOCKED',
     title: 'Architecture & Scalable Platforms',
-    notes:
-      'Designing robust systems and backend services that support growth, maintainability, and long-term product evolution.'
+    description:
+      'Designed robust backend systems and services that support growth, maintainability, and long-term product evolution.',
+    unlocks: ['Microservices', 'API Design', 'Cloud Patterns', 'Observability'],
+    xp: 4500,
   },
   {
+    icon: '🚀',
+    badge: 'ACHIEVEMENT UNLOCKED',
     title: 'Enterprise Software Delivery',
-    notes:
-      'Collaborating across stakeholders to ship secure, resilient, and business-aligned software in complex environments.'
-  }
+    description:
+      'Shipped secure, resilient, and business-aligned software in complex enterprise environments through stakeholder collaboration.',
+    unlocks: ['Enterprise Delivery', 'Security Practices', 'Stakeholder Alignment', 'CI/CD'],
+    xp: 4200,
+  },
 ];
 ---
 
 <section id="experience" class="section-card">
-  <SectionTitle title="Experience Summary" subtitle="High-level focus areas without inventing employer history." />
-  <div class="space-y-4">
-    {
-      experienceSummary.map((item) => (
-        <article class="rounded-xl border border-slate-200/80 p-4 dark:border-slate-800">
-          <h3 class="font-semibold">{item.title}</h3>
-          <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">{item.notes}</p>
-        </article>
-      ))
-    }
+  <SectionTitle
+    title="Quest Log"
+    subtitle="Career achievements and campaign milestones unlocked over time."
+    tag="ACHIEVEMENTS"
+    color="yellow"
+  />
+
+  <!-- Campaign progress bar -->
+  <div class="mb-6 rounded border border-neon-yellow/15 bg-arcade-black/40 p-4">
+    <div class="mb-2 flex items-center justify-between">
+      <span class="pixel-label text-neon-yellow" style="font-size:0.45rem;">CAMPAIGN PROGRESS</span>
+      <span class="pixel-label text-neon-yellow" style="font-size:0.45rem;">
+        {achievements.length} / {achievements.length} COMPLETED
+      </span>
+    </div>
+    <div class="stat-bar-track">
+      <div class="stat-bar-fill stat-bar-fill-yellow" style="width:100%;"></div>
+    </div>
+    <p class="mt-2 text-xs text-slate-500">All core career quests completed. New quests loading…</p>
   </div>
 
+  <div class="space-y-4">
+    {achievements.map((item) => (
+      <article class="achievement-card">
+        <div class="flex items-start gap-4">
+          <!-- Icon badge -->
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded border border-neon-yellow/25 bg-neon-yellow/8 text-2xl">
+            {item.icon}
+          </div>
+
+          <div class="min-w-0 flex-1 space-y-2">
+            <!-- Achievement header -->
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="pixel-label rounded border border-neon-yellow/30 bg-neon-yellow/8 px-2 py-0.5 text-neon-yellow" style="font-size:0.4rem;">
+                ★ {item.badge}
+              </span>
+              <span class="pixel-label text-neon-yellow" style="font-size:0.4rem;">+{item.xp.toLocaleString()} XP</span>
+            </div>
+
+            <!-- Title -->
+            <h3 class="font-bold text-slate-100">{item.title}</h3>
+
+            <!-- Description -->
+            <p class="text-sm leading-6 text-slate-400">{item.description}</p>
+
+            <!-- Unlocked skills -->
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              {item.unlocks.map((unlock) => (
+                <span class="skill-badge text-xs">✓ {unlock}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
 </section>

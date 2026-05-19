@@ -1,84 +1,154 @@
 ---
 import { siteConfig, githubProfileImageUrl } from '@/config/site';
 
-const mainTagline =
-  'Technical Lead focused on building scalable, high-quality software systems with a strong emphasis on architecture and clean design.';
-const BUILDER_LEVEL = 99;
-const gameLevelLabel = `Level ${BUILDER_LEVEL} Builder`;
-const titleSeparator = '•';
+const PLAYER_LEVEL = 99;
+const MAX_XP = 100;
+const XP_INCREMENT = 10;
 ---
 
-<section class="grid gap-8 py-10 md:grid-cols-[1.15fr,0.85fr] md:items-center md:py-16" id="home">
-  <div class="space-y-5">
-    <p
-      aria-label={`Player profile. Based in ${siteConfig.location}.`}
-      class="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-100/80 px-3 py-1 text-sm font-semibold text-brand-700 dark:border-brand-800 dark:bg-brand-900/40 dark:text-brand-300"
-    >
-      <span>Player Profile</span>
-      <span aria-hidden="true">•</span>
-      <span>Based in {siteConfig.location}</span>
-    </p>
-    <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-      {siteConfig.fullName}
-    </h1>
-    <p class="text-xl font-semibold text-slate-700 dark:text-slate-200">
-      <span>{siteConfig.title}</span>
-      <span aria-hidden="true" class="px-2">
-        {titleSeparator}
+<section
+  id="home"
+  class="relative grid gap-8 py-10 md:grid-cols-[1.25fr,0.75fr] md:items-center md:py-16"
+>
+  <!-- ▸ Left column — identity & actions -->
+  <div class="space-y-6">
+    <!-- INSERT COIN badge -->
+    <div class="flex items-center gap-3">
+      <span class="pixel-label inline-flex items-center gap-2 rounded border border-neon-cyan/30 bg-neon-cyan/5 px-2.5 py-1.5 text-neon-cyan" style="font-size:0.5rem;">
+        ★ INSERT COIN ★
       </span>
-      <span>{gameLevelLabel}</span>
-    </p>
-    <p class="max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300">{mainTagline}</p>
+      <span class="pixel-label text-slate-500" style="font-size:0.45rem;">
+        {siteConfig.location}
+      </span>
+    </div>
 
-    <div class="grid gap-2 pt-2 sm:grid-cols-2">
-      <a href="#about" class="quest-chip">
-        <span aria-hidden="true">🧭</span>
-        <span>Start Quest: About</span>
+    <!-- Player name -->
+    <div class="space-y-2">
+      <p class="pixel-label text-neon-cyan" style="font-size:0.5rem; letter-spacing:0.15em;">
+        PLAYER 1
+      </p>
+      <h1 class="text-5xl font-black tracking-tight text-slate-100 sm:text-6xl lg:text-7xl">
+        {siteConfig.fullName}
+      </h1>
+    </div>
+
+    <!-- Title & level -->
+    <div class="flex flex-wrap items-center gap-3">
+      <span class="text-lg font-semibold text-slate-300 sm:text-xl">
+        {siteConfig.title}
+      </span>
+      <span class="pixel-label rounded bg-neon-yellow/10 px-2 py-1 text-neon-yellow" style="font-size:0.45rem;">
+        LVL {PLAYER_LEVEL}
+      </span>
+    </div>
+
+    <!-- Tagline -->
+    <p class="max-w-xl text-base leading-7 text-slate-400">
+      {siteConfig.coreBio}
+    </p>
+
+    <!-- Quest navigation buttons -->
+    <div class="grid grid-cols-2 gap-2 pt-1 sm:grid-cols-4">
+      <a href="#about" class="quest-chip justify-center">
+        <span aria-hidden="true">📊</span>
+        <span>Stats</span>
       </a>
-      <a href="#skills" class="quest-chip">
+      <a href="#skills" class="quest-chip justify-center">
         <span aria-hidden="true">⚔️</span>
-        <span>Unlock Skills</span>
+        <span>Skills</span>
       </a>
-      <a href="#experience" class="quest-chip">
-        <span aria-hidden="true">🏆</span>
-        <span>View Achievements</span>
+      <a href="#projects" class="quest-chip justify-center">
+        <span aria-hidden="true">🗺️</span>
+        <span>Levels</span>
       </a>
-      <a href="#contact" class="quest-chip">
+      <a href="#contact" class="quest-chip justify-center">
         <span aria-hidden="true">📨</span>
-        <span>Send a Message</span>
+        <span>Contact</span>
+      </a>
+    </div>
+
+    <!-- PRESS START CTA -->
+    <div class="pt-2">
+      <a href="#about" class="btn-arcade inline-flex" style="font-family:'Press Start 2P',monospace; font-size:0.6rem;">
+        ▶ PRESS START
+        <span class="cursor-blink ml-1" aria-hidden="true">_</span>
       </a>
     </div>
   </div>
 
-  <div class="mx-auto w-full max-w-sm">
-    <div id="game-panel" class="game-panel section-card relative overflow-hidden p-6">
-      <div class="glow-orb absolute -right-12 -top-12 h-36 w-36 rounded-full bg-brand-500/20 blur-3xl"></div>
-      <div class="glow-orb absolute -left-10 bottom-0 h-24 w-24 rounded-full bg-cyan-400/20 blur-3xl"></div>
-      <img
-        src={githubProfileImageUrl}
-        alt={`GitHub profile photo of ${siteConfig.fullName}`}
-        loading="eager"
-        class="mx-auto aspect-square w-52 rounded-2xl border border-slate-200 object-cover shadow-lg transition-transform duration-300 dark:border-slate-700"
-      />
-      <div class="mt-5 space-y-3 rounded-xl border border-slate-200/80 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-900/80">
-        <p id="xp-status" aria-live="polite" aria-atomic="true" class="text-sm font-semibold text-slate-700 dark:text-slate-200">
-          🎮 Side Quest: Gain XP
+  <!-- ▸ Right column — HUD/profile card -->
+  <div class="mx-auto w-full max-w-xs">
+    <div
+      id="game-panel"
+      class="game-panel scanlines section-card overflow-hidden"
+      style="background: rgba(8,8,40,0.96); border-color: rgba(0,245,255,0.28);"
+    >
+      <!-- Floating glow orbs -->
+      <div class="glow-orb pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-neon-cyan/10 blur-3xl"></div>
+      <div class="glow-orb pointer-events-none absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-neon-purple/10 blur-3xl" style="animation-delay:-2s;"></div>
+
+      <!-- HUD header -->
+      <div class="mb-4 flex items-center justify-between">
+        <span class="pixel-label text-neon-cyan" style="font-size:0.45rem;">PLAYER PROFILE</span>
+        <span class="pixel-label text-neon-yellow" style="font-size:0.45rem;">◆ LVL {PLAYER_LEVEL}</span>
+      </div>
+
+      <!-- Avatar -->
+      <div class="relative mx-auto w-fit">
+        <div class="absolute inset-0 rounded-xl bg-neon-cyan/10 blur-lg"></div>
+        <img
+          src={githubProfileImageUrl}
+          alt={`GitHub profile photo of ${siteConfig.fullName}`}
+          loading="eager"
+          class="relative mx-auto aspect-square w-44 rounded-xl border border-neon-cyan/20 object-cover shadow-lg"
+        />
+      </div>
+
+      <!-- XP mini-game -->
+      <div class="mt-4 space-y-3 rounded border border-neon-cyan/15 bg-arcade-black/60 p-3">
+        <p
+          id="xp-status"
+          aria-live="polite"
+          aria-atomic="true"
+          class="pixel-label text-slate-300"
+          style="font-size:0.45rem;"
+        >
+          ★ SIDE QUEST: GAIN XP
         </p>
-        <div class="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-          <div id="xp-fill" class="h-full w-0 rounded-full bg-gradient-to-r from-brand-500 to-cyan-400 transition-all duration-300"></div>
+
+        <div class="stat-bar-track">
+          <div id="xp-fill" class="stat-bar-fill" style="width:0%"></div>
         </div>
-        <div class="flex items-center justify-between text-xs text-slate-600 dark:text-slate-300">
-          <span id="xp-level">XP: 0 / 100</span>
-          <span>Tap to level up</span>
+
+        <div class="flex items-center justify-between">
+          <span
+            id="xp-level"
+            class="pixel-label text-neon-cyan"
+            style="font-size:0.4rem;"
+          >XP: 0 / {MAX_XP}</span>
+          <span class="pixel-label text-slate-500" style="font-size:0.4rem;">TAP TO LEVEL UP</span>
         </div>
+
         <button
           id="xp-button"
           type="button"
-          aria-label="Gain XP. Current XP is 0 out of 100."
-          class="w-full rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-brand-500"
+          aria-label={`Gain XP. Current XP is 0 out of ${MAX_XP}.`}
+          class="btn-arcade w-full justify-center"
+          style="font-family:'Press Start 2P',monospace; font-size:0.5rem; padding:0.5rem 0.75rem;"
         >
-          +10 XP
+          +{XP_INCREMENT} XP
         </button>
+      </div>
+
+      <!-- Health/Status bars -->
+      <div class="mt-3 space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="pixel-label text-slate-400" style="font-size:0.4rem;">AVAILABILITY</span>
+          <span class="pixel-label text-neon-green" style="font-size:0.4rem;">OPEN</span>
+        </div>
+        <div class="stat-bar-track">
+          <div class="stat-bar-fill stat-bar-fill-green" style="width:85%;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -103,7 +173,13 @@ const titleSeparator = '•';
     if (!xpFill || !xpLevel || !xpStatus) return;
     xpFill.style.width = `${xp}%`;
     xpLevel.textContent = `XP: ${xp} / ${MAX_XP}`;
-    xpStatus.textContent = xp >= MAX_XP ? '✨ Quest Complete! Contact Ryan to collaborate.' : '🎮 Side Quest: Gain XP';
+    if (xp >= MAX_XP) {
+      xpStatus.textContent = '★ QUEST COMPLETE! CONTACT RYAN.';
+      xpStatus.style.color = '#ffd700';
+    } else {
+      xpStatus.textContent = '★ SIDE QUEST: GAIN XP';
+      xpStatus.style.color = '';
+    }
     if (xpButton instanceof HTMLButtonElement) {
       xpButton.setAttribute('aria-label', `Gain XP. Current XP is ${xp} out of ${MAX_XP}.`);
     }

@@ -4,49 +4,132 @@ import SectionTitle from './SectionTitle.astro';
 ---
 
 <section id="contact" class="section-card">
-  <SectionTitle title="Contact" subtitle="Open to software engineering leadership and architecture-focused opportunities." />
+  <SectionTitle
+    title="Start a New Mission"
+    subtitle="Open to software engineering leadership and architecture-focused opportunities."
+    tag="FINAL QUEST"
+    color="magenta"
+  />
 
   <div class="grid gap-6 lg:grid-cols-2">
-    <div class="space-y-3 text-sm sm:text-base">
-      <a class="link-pill w-full justify-start" href={`mailto:${siteConfig.email}`}>
-        <span aria-hidden="true">✉️</span>
-        <span>Email: {siteConfig.email}</span>
-      </a>
-      {/* Links use href="#" as safe placeholders; real URLs are set by JS below (light obfuscation, not security). */}
-      <a id="linkedin-link" class="link-pill w-full justify-start" href="#" target="_blank" rel="noreferrer">
-        <span aria-hidden="true">🔗</span>
-        <span>LinkedIn</span>
-      </a>
-      <a id="github-link" class="link-pill w-full justify-start" href="#" target="_blank" rel="noreferrer">
-        <span aria-hidden="true">💻</span>
-        <span>GitHub</span>
-      </a>
+    <!-- NPC Dialog / Quick links -->
+    <div class="space-y-4">
+      <!-- NPC dialog box -->
+      <div class="dialog-box">
+        <div class="mb-3 flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded border border-neon-magenta/30 bg-neon-magenta/8 text-xl">
+            🤖
+          </div>
+          <div>
+            <p class="pixel-label text-neon-magenta" style="font-size:0.45rem;">NPC: RYAN_BOT</p>
+            <p class="pixel-label text-slate-500" style="font-size:0.38rem;">Tech Lead · South Africa</p>
+          </div>
+        </div>
+        <p class="text-sm leading-7 text-slate-300">
+          "Greetings, traveller! I see you have made it to the final quest.
+          Whether you have a challenging mission, a leadership role, or an
+          interesting project — I am ready to join your party."
+        </p>
+        <span class="cursor-blink text-neon-magenta" aria-hidden="true">▮</span>
+      </div>
+
+      <!-- Quick link actions -->
+      <div class="space-y-2">
+        <p class="pixel-label text-slate-500" style="font-size:0.42rem;">CHOOSE YOUR ACTION</p>
+
+        <a class="link-pill w-full justify-start" href={`mailto:${siteConfig.email}`}>
+          <span aria-hidden="true">✉️</span>
+          <span>Send Email: {siteConfig.email}</span>
+        </a>
+
+        {/* Links use href="#" as safe placeholders; real URLs are set by JS below (light obfuscation). */}
+        <a id="linkedin-link" class="link-pill w-full justify-start" href="#" target="_blank" rel="noreferrer">
+          <span aria-hidden="true">🔗</span>
+          <span>Connect on LinkedIn</span>
+        </a>
+
+        <a id="github-link" class="link-pill w-full justify-start" href="#" target="_blank" rel="noreferrer">
+          <span aria-hidden="true">💻</span>
+          <span>View GitHub Profile</span>
+        </a>
+      </div>
+
+      <!-- Status badge -->
+      <div class="flex items-center gap-3 rounded border border-neon-green/20 bg-neon-green/5 px-4 py-3">
+        <span class="inline-block h-2 w-2 animate-pulse rounded-full bg-neon-green shadow-neon-green"></span>
+        <span class="text-sm font-medium text-neon-green">Available for new opportunities</span>
+      </div>
     </div>
 
-    <form id="contact-form" class="space-y-3 rounded-xl border border-slate-200/80 p-4 dark:border-slate-800">
-      <input type="hidden" name="_captcha" value="false" />
+    <!-- Contact form styled as quest submission -->
+    <div>
+      <div class="rounded border border-neon-cyan/15 bg-arcade-black/50 p-5">
+        <p class="pixel-label mb-4 text-neon-cyan" style="font-size:0.45rem;">
+          ► SUBMIT QUEST REQUEST
+        </p>
 
-      <label class="block text-sm font-medium" for="name">Name</label>
-      <input id="name" name="name" type="text" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 transition focus:ring dark:border-slate-700 dark:bg-slate-900" placeholder="Your name" />
+        <form id="contact-form" class="space-y-3">
+          <input type="hidden" name="_captcha" value="false" />
 
-      <label class="block text-sm font-medium" for="email">Email</label>
-      <input id="email" name="email" type="email" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 transition focus:ring dark:border-slate-700 dark:bg-slate-900" placeholder="you@example.com" />
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-400" for="name">Name</label>
+            <input
+              id="name" name="name" type="text" required
+              class="arcade-input"
+              placeholder="Your name"
+            />
+          </div>
 
-      <label class="block text-sm font-medium" for="subject">Subject</label>
-      <input id="subject" name="subject" type="text" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 transition focus:ring dark:border-slate-700 dark:bg-slate-900" placeholder="Subject" />
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-400" for="email">Email</label>
+            <input
+              id="email" name="email" type="email" required
+              class="arcade-input"
+              placeholder="you@example.com"
+            />
+          </div>
 
-      <label class="block text-sm font-medium" for="message">Message</label>
-      <textarea id="message" name="message" rows="4" required class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 transition focus:ring dark:border-slate-700 dark:bg-slate-900" placeholder="Tell me about your project or role"></textarea>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-400" for="subject">Subject</label>
+            <input
+              id="subject" name="subject" type="text" required
+              class="arcade-input"
+              placeholder="Quest title"
+            />
+          </div>
 
-      <div id="form-status" class="hidden rounded-lg px-4 py-2 text-sm font-medium" role="alert" aria-live="polite"></div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-400" for="message">Message</label>
+            <textarea
+              id="message" name="message" rows="4" required
+              class="arcade-input resize-none"
+              placeholder="Describe your mission or opportunity…"
+            ></textarea>
+          </div>
 
-      <button id="submit-btn" type="submit" class="rounded-full bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-500 disabled:opacity-60">Send Message</button>
-    </form>
+          <div
+            id="form-status"
+            class="hidden rounded px-4 py-2 text-sm font-medium"
+            role="alert"
+            aria-live="polite"
+          ></div>
+
+          <button
+            id="submit-btn"
+            type="submit"
+            class="btn-arcade w-full justify-center"
+            style="font-family:'Press Start 2P',monospace; font-size:0.55rem;"
+          >
+            ► SEND MESSAGE
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 </section>
 
 <script>
-  // Light obfuscation only — this prevents full URLs from appearing in static HTML.
+  // Light obfuscation only — prevents full URLs from appearing in static HTML.
   const profileLinks: Record<string, string[]> = {
     'github-link': ['https://', 'git', 'hub.com/', 'RazorRyan'],
     'linkedin-link': ['https://', 'www.', 'linkedin.com/in/', 'ryan-chetty-89121865/'],
@@ -68,10 +151,10 @@ import SectionTitle from './SectionTitle.astro';
     if (!statusEl) return;
     statusEl.textContent = message;
     statusEl.className = [
-      'rounded-lg px-4 py-2 text-sm font-medium',
+      'rounded px-4 py-2 text-sm font-medium',
       success
-        ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
-        : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300',
+        ? 'bg-neon-green/10 border border-neon-green/30 text-neon-green'
+        : 'bg-neon-magenta/10 border border-neon-magenta/30 text-neon-magenta',
     ].join(' ');
   }
 
@@ -80,7 +163,7 @@ import SectionTitle from './SectionTitle.astro';
     if (!form || !submitBtn) return;
 
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending…';
+    submitBtn.textContent = '► SENDING…';
     if (statusEl) statusEl.className = 'hidden';
 
     try {
@@ -91,17 +174,16 @@ import SectionTitle from './SectionTitle.astro';
       });
       const data = await res.json();
       if (data.success === 'true') {
-        showStatus('\u2705 Message sent! I\u2019ll get back to you soon.', true);
+        showStatus('✅ Quest submitted! I’ll respond soon.', true);
         form.reset();
       } else {
-        showStatus('❌ Something went wrong. Please try again or email me directly.', false);
+        showStatus('❌ Something went wrong. Please email me directly.', false);
       }
     } catch {
       showStatus('❌ Network error. Please try again or email me directly.', false);
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Send Message';
+      submitBtn.textContent = '► SEND MESSAGE';
     }
   });
 </script>
-

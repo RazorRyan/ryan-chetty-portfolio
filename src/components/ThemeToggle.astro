@@ -1,19 +1,24 @@
 <button
   id="theme-toggle"
   type="button"
-  class="link-pill"
-  aria-label="Toggle dark and light mode"
+  class="link-pill text-xs"
+  aria-label="Toggle arcade (dark) and day (light) mode"
+  aria-pressed="true"
 >
-  <span aria-hidden="true">🌓</span>
-  <span class="hidden sm:inline">Theme</span>
+  <span aria-hidden="true" id="theme-icon">🌙</span>
+  <span class="hidden sm:inline" id="theme-label">Arcade</span>
 </button>
 
 <script>
-  const button = document.getElementById('theme-toggle');
+  const button = document.getElementById('theme-toggle') as HTMLButtonElement | null;
+  const icon = document.getElementById('theme-icon');
+  const label = document.getElementById('theme-label');
 
   const updateTheme = () => {
     const isDark = document.documentElement.classList.contains('dark');
-    button?.setAttribute('aria-pressed', String(isDark));
+    if (button) button.setAttribute('aria-pressed', String(isDark));
+    if (icon) icon.textContent = isDark ? '🌙' : '☀️';
+    if (label) label.textContent = isDark ? 'Arcade' : 'Day';
   };
 
   button?.addEventListener('click', () => {

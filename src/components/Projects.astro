@@ -1,39 +1,111 @@
 ---
 import SectionTitle from './SectionTitle.astro';
 
-const featuredProjects = [
+const levels = [
   {
-    name: 'Enterprise Platform Initiative',
+    number: '01',
+    title: 'Enterprise Platform Initiative',
+    genre: 'Boss Battle',
+    difficulty: 4,
     description:
-      'Placeholder for a real project summary focused on platform architecture, reliability, and delivery outcomes.',
-    status: 'Add verified case study details'
+      'Designing and delivering a large-scale enterprise platform with a focus on system architecture, reliability, and measured delivery outcomes.',
+    stack: ['Architecture', 'Backend', 'Cloud', 'Team Leadership'],
+    status: 'COMPLETED',
+    statusColor: 'green',
   },
   {
-    name: 'AI-Enabled Solution Delivery',
+    number: '02',
+    title: 'AI-Enabled Solution Delivery',
+    genre: 'Side Quest',
+    difficulty: 3,
     description:
-      'Placeholder for a real project where AI was applied to solve complex domain or operational challenges.',
-    status: 'Add verified metrics and scope'
+      'Applying AI tooling and LLM-driven patterns to solve complex domain and operational challenges in enterprise systems.',
+    stack: ['AI/ML Integration', 'APIs', 'Backend Engineering'],
+    status: 'IN PROGRESS',
+    statusColor: 'yellow',
   },
   {
-    name: 'Game Development / Technical Experimentation',
+    number: '03',
+    title: 'Game Development / Tech Experiments',
+    genre: 'Free Roam',
+    difficulty: 2,
     description:
-      'Placeholder for selected side-projects or prototypes that demonstrate creativity and engineering depth.',
-    status: 'Add links, stack, and outcomes'
-  }
+      'Selected side-projects and prototypes blending game development with engineering depth — where creativity meets technical craft.',
+    stack: ['Game Dev', 'Prototyping', 'Creative Engineering'],
+    status: 'ONGOING',
+    statusColor: 'cyan',
+  },
 ];
+
+const difficultyStars = (n: number, max = 5) =>
+  '★'.repeat(n) + '☆'.repeat(max - n);
+
+const statusStyles: Record<string, string> = {
+  green:  'border-neon-green/40 bg-neon-green/8 text-neon-green',
+  yellow: 'border-neon-yellow/40 bg-neon-yellow/8 text-neon-yellow',
+  cyan:   'border-neon-cyan/40 bg-neon-cyan/8 text-neon-cyan',
+};
 ---
 
 <section id="projects" class="section-card">
-  <SectionTitle title="Featured Projects" subtitle="Editable placeholders until final project data is provided." />
+  <SectionTitle
+    title="Featured Levels"
+    subtitle="Select a mission — each level represents a domain of engineering impact."
+    tag="LEVEL SELECT"
+    color="yellow"
+  />
+
   <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-    {
-      featuredProjects.map((project) => (
-        <article class="group rounded-xl border border-slate-200/80 p-4 transition hover:-translate-y-1 hover:border-brand-400 dark:border-slate-800 dark:hover:border-brand-500">
-          <h3 class="font-semibold">{project.name}</h3>
-          <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{project.description}</p>
-          <p class="mt-3 text-xs font-medium uppercase tracking-wide text-brand-600 dark:text-brand-300">{project.status}</p>
-        </article>
-      ))
-    }
+    {levels.map((level) => (
+      <article class="level-card group">
+        <!-- Level header -->
+        <div class="mb-3 flex items-start justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span
+              class="pixel-label flex h-8 w-8 shrink-0 items-center justify-center rounded border border-neon-cyan/30 bg-neon-cyan/10 text-neon-cyan"
+              style="font-size:0.5rem;"
+            >
+              {level.number}
+            </span>
+            <div>
+              <p class="pixel-label text-slate-500" style="font-size:0.38rem;">{level.genre}</p>
+            </div>
+          </div>
+          <span
+            class:list={[
+              'pixel-label shrink-0 rounded border px-2 py-1',
+              statusStyles[level.statusColor] ?? statusStyles.cyan,
+            ]}
+            style="font-size:0.38rem;"
+          >
+            {level.status}
+          </span>
+        </div>
+
+        <!-- Title -->
+        <h3 class="mb-2 font-bold text-slate-100 transition-colors group-hover:text-neon-cyan">
+          {level.title}
+        </h3>
+
+        <!-- Difficulty -->
+        <p class="mb-3 text-xs text-neon-yellow" aria-label={`Difficulty: ${level.difficulty} out of 5`}>
+          {difficultyStars(level.difficulty)}
+        </p>
+
+        <!-- Description -->
+        <p class="mb-4 text-sm leading-6 text-slate-400">{level.description}</p>
+
+        <!-- Stack badges -->
+        <div class="flex flex-wrap gap-1.5">
+          {level.stack.map((tag) => (
+            <span class="skill-badge text-xs">{tag}</span>
+          ))}
+        </div>
+      </article>
+    ))}
   </div>
+
+  <p class="mt-5 text-center text-xs text-slate-500">
+    More levels incoming — real project case studies will be added once verified.
+  </p>
 </section>

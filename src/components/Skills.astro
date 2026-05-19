@@ -3,36 +3,149 @@ import SectionTitle from './SectionTitle.astro';
 
 const skillGroups = [
   {
+    id: 'leadership',
+    icon: '👑',
+    tag: 'EQUIPPED',
     title: 'Leadership & Architecture',
-    items: ['Technical Leadership', 'Solution Architecture', 'System Design', 'Code Quality Strategy']
+    color: 'cyan',
+    skills: [
+      { name: 'Technical Leadership', tier: 'S' },
+      { name: 'Solution Architecture', tier: 'S' },
+      { name: 'System Design', tier: 'A' },
+      { name: 'Code Quality Strategy', tier: 'A' },
+    ],
   },
   {
+    id: 'backend',
+    icon: '⚙️',
+    tag: 'EQUIPPED',
     title: 'Backend & APIs',
-    items: ['Service-Oriented Architectures', 'REST API Design', 'Performance Optimization', 'Integration Engineering']
+    color: 'magenta',
+    skills: [
+      { name: 'Service-Oriented Architecture', tier: 'S' },
+      { name: 'REST API Design', tier: 'A' },
+      { name: 'Performance Optimisation', tier: 'A' },
+      { name: 'Integration Engineering', tier: 'B' },
+    ],
   },
   {
+    id: 'cloud',
+    icon: '☁️',
+    tag: 'UNLOCKED',
     title: 'Cloud & Delivery',
-    items: ['Cloud Platforms', 'Scalable Infrastructure Patterns', 'CI/CD Practices', 'Observability Mindset']
+    color: 'cyan',
+    skills: [
+      { name: 'Cloud Platforms', tier: 'A' },
+      { name: 'Scalable Infrastructure', tier: 'A' },
+      { name: 'CI/CD Practices', tier: 'A' },
+      { name: 'Observability Mindset', tier: 'B' },
+    ],
   },
   {
+    id: 'enterprise',
+    icon: '🏢',
+    tag: 'UNLOCKED',
     title: 'Enterprise Engineering',
-    items: ['Domain Modeling', 'Security-Aware Development', 'Cross-Team Collaboration', 'Technical Roadmapping']
-  }
+    color: 'yellow',
+    skills: [
+      { name: 'Domain Modelling', tier: 'A' },
+      { name: 'Security-Aware Development', tier: 'A' },
+      { name: 'Cross-Team Collaboration', tier: 'S' },
+      { name: 'Technical Roadmapping', tier: 'A' },
+    ],
+  },
 ];
+
+const tierColors = {
+  S: 'border-neon-yellow/50 bg-neon-yellow/10 text-neon-yellow',
+  A: 'border-neon-cyan/50 bg-neon-cyan/10 text-neon-cyan',
+  B: 'border-neon-green/40 bg-neon-green/8 text-neon-green',
+};
+
+const groupColors = {
+  cyan:    'border-neon-cyan/20 bg-neon-cyan/5',
+  magenta: 'border-neon-magenta/20 bg-neon-magenta/5',
+  yellow:  'border-neon-yellow/20 bg-neon-yellow/5',
+  green:   'border-neon-green/20 bg-neon-green/5',
+};
+
+const groupLabelColors = {
+  cyan:    'text-neon-cyan',
+  magenta: 'text-neon-magenta',
+  yellow:  'text-neon-yellow',
+  green:   'text-neon-green',
+};
 ---
 
 <section id="skills" class="section-card">
-  <SectionTitle title="Skills / Tech Stack" subtitle="Core strengths for large-scale and enterprise-focused delivery." />
+  <SectionTitle
+    title="Skill Inventory"
+    subtitle="Unlocked abilities and power-ups for enterprise-scale delivery."
+    tag="LOADOUT"
+    color="magenta"
+  />
+
+  <!-- Tier legend -->
+  <div class="mb-5 flex flex-wrap items-center gap-3">
+    <span class="text-xs text-slate-500">Tier key:</span>
+    {Object.entries(tierColors).map(([tier, cls]) => (
+      <span class:list={['rounded border px-2 py-0.5 text-xs font-bold', cls]}>
+        {tier}-Tier
+      </span>
+    ))}
+  </div>
+
   <div class="grid gap-4 sm:grid-cols-2">
-    {
-      skillGroups.map((group) => (
-        <article class="rounded-xl border border-slate-200/80 p-4 dark:border-slate-800">
-          <h3 class="font-semibold text-slate-900 dark:text-slate-100">{group.title}</h3>
-          <ul class="mt-3 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
-            {group.items.map((item) => <li>• {item}</li>)}
-          </ul>
-        </article>
-      ))
-    }
+    {skillGroups.map((group) => (
+      <article
+        class:list={[
+          'rounded border p-4 transition duration-200',
+          groupColors[group.color as keyof typeof groupColors] ?? groupColors.cyan,
+        ]}
+      >
+        <div class="mb-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xl" aria-hidden="true">{group.icon}</span>
+            <h3 class="font-semibold text-slate-100">{group.title}</h3>
+          </div>
+          <span
+            class:list={[
+              'pixel-label rounded border px-1.5 py-1',
+              groupLabelColors[group.color as keyof typeof groupLabelColors] ?? groupLabelColors.cyan,
+              `border-current opacity-60`,
+            ]}
+            style="font-size:0.38rem;"
+          >
+            {group.tag}
+          </span>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          {group.skills.map((skill) => (
+            <span class="skill-badge">
+              <span
+                class:list={[
+                  'inline-flex h-4 w-4 items-center justify-center rounded-sm border text-center text-xs font-black leading-none',
+                  tierColors[skill.tier as keyof typeof tierColors] ?? tierColors.B,
+                ]}
+                aria-label={`${skill.tier}-tier`}
+              >
+                {skill.tier}
+              </span>
+              {skill.name}
+            </span>
+          ))}
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <!-- Bottom XP summary -->
+  <div class="mt-5 flex flex-wrap items-center gap-4 rounded border border-neon-cyan/10 bg-arcade-black/30 px-4 py-3 text-sm text-slate-400">
+    <span class="pixel-label text-neon-cyan" style="font-size:0.45rem;">TOTAL SKILLS UNLOCKED</span>
+    <span class="pixel-label text-neon-yellow" style="font-size:0.45rem;">
+      {skillGroups.reduce((acc, g) => acc + g.skills.length, 0)} / {skillGroups.reduce((acc, g) => acc + g.skills.length, 0)} ★
+    </span>
+    <span class="ml-auto text-xs text-slate-500">New unlocks available — keep building.</span>
   </div>
 </section>

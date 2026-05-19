@@ -1,18 +1,123 @@
 ---
 import { siteConfig } from '@/config/site';
 import SectionTitle from './SectionTitle.astro';
+
+const stats = [
+  { label: 'Technical Leadership', value: 95, color: 'cyan' },
+  { label: 'Solution Architecture', value: 92, color: 'cyan' },
+  { label: 'Backend Engineering',   value: 90, color: 'cyan' },
+  { label: 'AI & Innovation',       value: 85, color: 'yellow' },
+  { label: 'Game Development',      value: 80, color: 'green' },
+  { label: 'Team Mentorship',       value: 93, color: 'cyan' },
+];
+
+const attributes = [
+  { icon: '⚔️', label: 'WEAPON',    value: 'Clean Architecture' },
+  { icon: '🛡️', label: 'DEFENSE',   value: 'Scalable Systems' },
+  { icon: '✨', label: 'MAGIC',     value: 'AI-Driven Solutions' },
+  { icon: '🧠', label: 'WISDOM',    value: 'Engineering Leadership' },
+  { icon: '⚡', label: 'SPEED',     value: 'CI/CD & Delivery' },
+  { icon: '🎮', label: 'SIDE SKILL', value: 'Game Development' },
+];
 ---
 
 <section id="about" class="section-card">
-  <SectionTitle title="About Me" subtitle="Engineering leadership, architecture, and scalable delivery." />
-  <div class="space-y-4 text-slate-700 dark:text-slate-300">
-    <p>{siteConfig.coreBio}</p>
-    <p>
-      I bring a product-minded and architecture-first approach to software engineering, balancing technical depth with delivery focus.
-      My work centers on reliable backend systems, modern API design, cloud-native patterns, and maintainable enterprise solutions.
-    </p>
-    <p>
-      I enjoy mentoring teams, setting technical direction, and driving quality through pragmatic standards and clean engineering practices.
-    </p>
+  <SectionTitle
+    title="Player Stats"
+    subtitle="Character profile — Senior Software Engineer / Tech Lead"
+    tag="PLAYER PROFILE"
+    color="cyan"
+  />
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <!-- Bio / Character description -->
+    <div class="space-y-4">
+      <div class="dialog-box">
+        <p class="pixel-label mb-3 text-neon-cyan" style="font-size:0.45rem;">
+          ▶ CHARACTER BIO
+        </p>
+        <p class="text-sm leading-7 text-slate-300">
+          {siteConfig.coreBio}
+        </p>
+        <p class="mt-3 text-sm leading-7 text-slate-400">
+          Product-minded and architecture-first, I balance technical depth with delivery focus.
+          My work centres on reliable backend systems, modern API design, cloud-native patterns,
+          and maintainable enterprise solutions.
+        </p>
+        <p class="mt-3 text-sm leading-7 text-slate-400">
+          I enjoy mentoring teams, setting technical direction, and driving quality through
+          pragmatic standards and clean engineering practices.
+        </p>
+        <span class="cursor-blink text-neon-cyan" aria-hidden="true">▮</span>
+      </div>
+
+      <!-- Equipment / Attributes -->
+      <div class="rounded border border-neon-cyan/15 bg-arcade-black/40 p-4">
+        <p class="pixel-label mb-3 text-neon-yellow" style="font-size:0.45rem;">
+          ◆ EQUIPMENT LOADOUT
+        </p>
+        <div class="grid grid-cols-2 gap-2">
+          {attributes.map((attr) => (
+            <div class="flex items-start gap-2 rounded border border-white/5 bg-white/5 p-2">
+              <span class="text-base" aria-hidden="true">{attr.icon}</span>
+              <div class="min-w-0">
+                <p class="pixel-label text-slate-500 truncate" style="font-size:0.38rem;">{attr.label}</p>
+                <p class="mt-0.5 truncate text-xs font-medium text-slate-200">{attr.value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat bars -->
+    <div class="space-y-4">
+      <div class="rounded border border-neon-cyan/15 bg-arcade-black/40 p-5">
+        <p class="pixel-label mb-4 text-neon-cyan" style="font-size:0.45rem;">
+          ◆ ATTRIBUTE STATS
+        </p>
+        <div class="space-y-4">
+          {stats.map((stat) => (
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-medium text-slate-300">{stat.label}</span>
+                <span
+                  class:list={[
+                    'pixel-label',
+                    stat.color === 'yellow' ? 'text-neon-yellow' : stat.color === 'green' ? 'text-neon-green' : 'text-neon-cyan',
+                  ]}
+                  style="font-size:0.4rem;"
+                >
+                  {stat.value}/100
+                </span>
+              </div>
+              <div class="stat-bar-track">
+                <div
+                  class:list={[
+                    'stat-bar-fill',
+                    stat.color === 'yellow' ? 'stat-bar-fill-yellow' : stat.color === 'green' ? 'stat-bar-fill-green' : '',
+                  ]}
+                  style={`width:${stat.value}%;`}
+                  role="progressbar"
+                  aria-valuenow={stat.value}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={stat.label}
+                ></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Class / rank badges -->
+      <div class="flex flex-wrap gap-2">
+        <span class="skill-badge">🏅 Technical Lead</span>
+        <span class="skill-badge">☁️ Cloud-Native</span>
+        <span class="skill-badge">🤖 AI Enthusiast</span>
+        <span class="skill-badge">🎮 Game Dev</span>
+        <span class="skill-badge">🦅 South Africa</span>
+      </div>
+    </div>
   </div>
 </section>

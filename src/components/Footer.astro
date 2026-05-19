@@ -2,8 +2,19 @@
 import { siteConfig } from '@/config/site';
 ---
 
-<footer class="mx-auto mt-10 w-full max-w-6xl px-4 pb-8 text-center text-sm text-slate-500 sm:px-6 lg:px-8 dark:text-slate-400">
-  <p>
-    © {new Date().getFullYear()} {siteConfig.fullName}. Built with Astro, TypeScript, and Tailwind CSS.
-  </p>
+<footer class="mx-auto mt-12 w-full max-w-6xl px-4 pb-8 sm:px-6 lg:px-8">
+  <!-- Divider -->
+  <div class="mb-6 h-px w-full bg-gradient-to-r from-transparent via-neon-cyan/20 to-transparent"></div>
+
+  <div class="flex flex-col items-center gap-3 text-center">
+    <p class="pixel-label text-neon-cyan" style="font-size:0.45rem; letter-spacing:0.15em;">
+      ★ GAME OVER — THANKS FOR PLAYING ★
+    </p>
+    <p class="text-xs text-slate-500">
+      © {new Date().getFullYear()} {siteConfig.fullName} — Crafted with Astro, TypeScript &amp; Tailwind CSS.
+    </p>
+    <p class="pixel-label text-slate-600" style="font-size:0.38rem;">
+      CONTINUE? &nbsp; 9 &nbsp; 8 &nbsp; 7 &nbsp;<span class="cursor-blink">…</span>
+    </p>
+  </div>
 </footer>
