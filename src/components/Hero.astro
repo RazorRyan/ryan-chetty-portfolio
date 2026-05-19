@@ -114,7 +114,7 @@ const titleSeparator = '•';
   });
 
   if (!prefersReducedMotion) {
-    let frameRequestId = 0;
+    let rafHandle = 0;
     let targetX = 0;
     let targetY = 0;
 
@@ -125,10 +125,10 @@ const titleSeparator = '•';
       targetX = ((event.clientY - rect.top) / rect.height - 0.5) * -MAX_TILT_ANGLE;
       targetY = ((event.clientX - rect.left) / rect.width - 0.5) * MAX_TILT_ANGLE;
 
-      if (frameRequestId) return;
-      frameRequestId = window.requestAnimationFrame(() => {
+      if (rafHandle !== 0) return;
+      rafHandle = window.requestAnimationFrame(() => {
         target.style.transform = `perspective(${PANEL_PERSPECTIVE}px) rotateX(${targetX.toFixed(ROTATION_PRECISION)}deg) rotateY(${targetY.toFixed(ROTATION_PRECISION)}deg)`;
-        frameRequestId = 0;
+        rafHandle = 0;
       });
     });
 
