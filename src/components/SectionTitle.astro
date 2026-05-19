@@ -2,12 +2,32 @@
 interface Props {
   title: string;
   subtitle?: string;
+  tag?: string;
+  color?: 'cyan' | 'magenta' | 'yellow' | 'green';
 }
 
-const { title, subtitle } = Astro.props;
+const { title, subtitle, tag, color = 'cyan' } = Astro.props;
+
+const tagColors = {
+  cyan: 'text-neon-cyan border-neon-cyan/30 bg-neon-cyan/5',
+  magenta: 'text-neon-magenta border-neon-magenta/30 bg-neon-magenta/5',
+  yellow: 'text-neon-yellow border-neon-yellow/30 bg-neon-yellow/5',
+  green: 'text-neon-green border-neon-green/30 bg-neon-green/5',
+};
 ---
 
-<div class="mb-5 space-y-1">
-  <h2 class="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
-  {subtitle && <p class="text-slate-600 dark:text-slate-300">{subtitle}</p>}
+<div class="mb-6 space-y-2">
+  {tag && (
+    <p class={`pixel-label-md inline-block rounded border px-2 py-1 ${tagColors[color]}`}>
+      {tag}
+    </p>
+  )}
+  <h2 class="text-2xl font-bold tracking-tight text-slate-100 sm:text-3xl dark:text-slate-100">
+    {title}
+  </h2>
+  {subtitle && (
+    <p class="text-sm text-slate-400 dark:text-slate-400">
+      {subtitle}
+    </p>
+  )}
 </div>
