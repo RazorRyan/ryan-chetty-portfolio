@@ -160,6 +160,15 @@ html:not(.dark) .hud-panel {
   text-transform: uppercase;
 }
 
+/* Medium variant — used for badge labels and section tags */
+.pixel-label-md {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  line-height: 1.4;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
 /* Modifier to give .btn-arcade the Press Start 2P pixel font */
 .btn-arcade-pixel {
   font-family: 'Press Start 2P', monospace;

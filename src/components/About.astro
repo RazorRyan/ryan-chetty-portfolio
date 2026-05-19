@@ -83,10 +83,9 @@ const attributes = [
                 <span class="text-xs font-medium text-slate-300">{stat.label}</span>
                 <span
                   class:list={[
-                    'pixel-label',
+                    'pixel-label-xs',
                     stat.color === 'yellow' ? 'text-neon-yellow' : stat.color === 'green' ? 'text-neon-green' : 'text-neon-cyan',
                   ]}
-                  style="font-size:0.4rem;"
                 >
                   {stat.value}/100
                 </span>

@@ -14,7 +14,7 @@ const XP_INCREMENT = 10;
   <div class="space-y-6">
     <!-- INSERT COIN badge -->
     <div class="flex items-center gap-3">
-      <span class="pixel-label inline-flex items-center gap-2 rounded border border-neon-cyan/30 bg-neon-cyan/5 px-2.5 py-1.5 text-neon-cyan" style="font-size:0.5rem;">
+      <span class="pixel-label-md inline-flex items-center gap-2 rounded border border-neon-cyan/30 bg-neon-cyan/5 px-2.5 py-1.5 text-neon-cyan">
         ★ INSERT COIN ★
       </span>
       <span class="pixel-label-sm text-slate-500">
@@ -24,7 +24,7 @@ const XP_INCREMENT = 10;
 
     <!-- Player name -->
     <div class="space-y-2">
-      <p class="pixel-label text-neon-cyan" style="font-size:0.5rem; letter-spacing:0.15em;">
+      <p class="pixel-label-md text-neon-cyan">
         PLAYER 1
       </p>
       <h1 class="text-5xl font-black tracking-tight text-slate-100 sm:text-6xl lg:text-7xl">
@@ -110,8 +110,7 @@ const XP_INCREMENT = 10;
           id="xp-status"
           aria-live="polite"
           aria-atomic="true"
-          class="pixel-label text-slate-300"
-          style="font-size:0.45rem;"
+          class="pixel-label-sm text-slate-300"
         >
           ★ SIDE QUEST: GAIN XP
         </p>
@@ -123,10 +122,9 @@ const XP_INCREMENT = 10;
         <div class="flex items-center justify-between">
           <span
             id="xp-level"
-            class="pixel-label text-neon-cyan"
-            style="font-size:0.4rem;"
+            class="pixel-label-xs text-neon-cyan"
           >XP: 0 / {MAX_XP}</span>
-          <span class="pixel-label text-slate-500" style="font-size:0.4rem;">TAP TO LEVEL UP</span>
+          <span class="pixel-label-xs text-slate-500">TAP TO LEVEL UP</span>
         </div>
 
         <button
@@ -143,8 +141,8 @@ const XP_INCREMENT = 10;
       <!-- Health/Status bars -->
       <div class="mt-3 space-y-2">
         <div class="flex items-center justify-between text-xs">
-          <span class="pixel-label text-slate-400" style="font-size:0.4rem;">AVAILABILITY</span>
-          <span class="pixel-label text-neon-green" style="font-size:0.4rem;">OPEN</span>
+          <span class="pixel-label-xs text-slate-400">AVAILABILITY</span>
+          <span class="pixel-label-xs text-neon-green">OPEN</span>
         </div>
         <div class="stat-bar-track">
           <div class="stat-bar-fill stat-bar-fill-green" style="width:85%;"></div>
