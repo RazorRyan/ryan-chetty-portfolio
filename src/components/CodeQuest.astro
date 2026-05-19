@@ -5,7 +5,7 @@ import SectionTitle from './SectionTitle.astro';
 <section id="mini-game" class="section-card">
   <SectionTitle
     title="Code Valley"
-    subtitle="Explore 5 zones, collect skill badges, and unlock achievements across my portfolio world."
+    subtitle="Mine ore nodes across 5 zones and uncover the skills hidden in the valley."
     tag="PLAY MY PORTFOLIO"
     color="cyan"
   />
@@ -19,9 +19,17 @@ import SectionTitle from './SectionTitle.astro';
         height="400"
         class="block w-full rounded"
         style="image-rendering: pixelated; image-rendering: crisp-edges; border: 2px solid rgba(0,245,255,0.3); border-radius: 4px;"
-        aria-label="Code Valley: explore the world with arrow keys or WASD, collect portfolio items across 5 zones"
+        aria-label="Code Valley: explore the world with arrow keys or WASD, mine ore nodes across 5 zones"
         tabindex="0"
       ></canvas>
+
+      <!-- Sound toggle — lives INSIDE canvas wrapper so D-pad never covers it -->
+      <button
+        id="cq-sound"
+        class="pixel-label-xs absolute rounded border border-slate-700 text-slate-500 transition hover:border-slate-500 hover:text-slate-300"
+        style="bottom: 8px; right: 8px; z-index: 20; background: rgba(4,4,20,0.90); padding: 3px 7px;"
+        aria-label="Toggle sound"
+      >🔇 SFX</button>
 
       <!-- Live HUD (positioned over canvas) -->
       <div id="cq-hud" class="pointer-events-none absolute left-0 top-0 w-full" style="display: none;">
@@ -42,10 +50,11 @@ import SectionTitle from './SectionTitle.astro';
       >
         <p class="pixel-label-md text-neon-cyan">★ CODE VALLEY ★</p>
         <p class="max-w-xs text-center text-xs leading-relaxed text-slate-400">
-          Explore <span class="font-bold text-neon-yellow">5 zones</span> and collect
-          <span class="font-bold text-neon-cyan">11 portfolio items</span> hidden across the valley.<br /><br />
+          Explore <span class="font-bold text-neon-yellow">5 zones</span> and mine
+          <span class="font-bold text-neon-cyan">11 ore nodes</span> across the valley.<br /><br />
           <span class="text-neon-cyan/70">Arrow keys / WASD</span> to move<br />
-          <span class="text-neon-cyan/70">D-pad buttons</span> on mobile
+          <span class="text-neon-cyan/70">Space / Z</span> to mine<br />
+          <span class="text-neon-cyan/70">D-pad + ⛏</span> on mobile
         </p>
         <button id="cq-start-btn" class="btn-arcade btn-arcade-pixel">▶ START ADVENTURE</button>
       </div>
@@ -59,7 +68,7 @@ import SectionTitle from './SectionTitle.astro';
         aria-modal="true"
         aria-labelledby="cq-dlg-title"
       >
-        <p class="pixel-label-sm mb-1.5 text-neon-cyan" id="cq-dlg-title">★ DISCOVERED!</p>
+        <p class="pixel-label-sm mb-1.5 text-neon-cyan" id="cq-dlg-title">★ ORE MINED!</p>
         <p class="mb-3 text-xs leading-relaxed text-slate-300" id="cq-dlg-msg"></p>
         <button id="cq-dlg-ok" class="btn-arcade btn-arcade-pixel" style="padding: 0.3rem 0.9rem; font-size: 0.4rem;">
           OK ▶
@@ -86,7 +95,7 @@ import SectionTitle from './SectionTitle.astro';
         <p class="pixel-label-md text-neon-yellow">★ ADVENTURE COMPLETE! ★</p>
         <p class="pixel-label-sm text-neon-cyan" id="cq-win-xp">TOTAL XP: 0</p>
         <p class="max-w-xs text-center text-xs leading-relaxed text-slate-400">
-          All 5 zones explored and 11 items collected.<br />
+          All 5 zones explored and 11 nodes mined.<br />
           <span class="font-bold text-neon-green">Portfolio Explorer: UNLOCKED</span>
         </p>
         <a href="#contact" class="btn-arcade btn-arcade-pixel btn-arcade-yellow no-underline">
@@ -98,32 +107,32 @@ import SectionTitle from './SectionTitle.astro';
       </div>
     </div>
 
-    <!-- Mobile D-pad controls -->
+    <!-- Mobile controls: D-pad + Mine action button -->
     <div
       id="cq-controls"
-      class="mx-auto mt-3 flex flex-col items-center gap-1"
-      style="max-width: 160px;"
-      aria-label="Movement controls"
+      class="mx-auto mt-3 flex items-center justify-center gap-6"
+      style="max-width: 280px;"
+      aria-label="Movement and action controls"
     >
-      <button data-dir="up"    class="cq-dpad" aria-label="Move up">▲</button>
-      <div class="flex gap-1">
-        <button data-dir="left"  class="cq-dpad" aria-label="Move left">◄</button>
-        <div class="h-9 w-9"></div>
-        <button data-dir="right" class="cq-dpad" aria-label="Move right">►</button>
+      <div class="flex flex-col items-center gap-1">
+        <button data-dir="up"    class="cq-dpad" aria-label="Move up">▲</button>
+        <div class="flex gap-1">
+          <button data-dir="left"  class="cq-dpad" aria-label="Move left">◄</button>
+          <div class="h-9 w-9"></div>
+          <button data-dir="right" class="cq-dpad" aria-label="Move right">►</button>
+        </div>
+        <button data-dir="down"  class="cq-dpad" aria-label="Move down">▼</button>
       </div>
-      <button data-dir="down"  class="cq-dpad" aria-label="Move down">▼</button>
+      <!-- Mine action button -->
+      <button
+        id="cq-action"
+        class="cq-dpad"
+        style="width:3rem;height:3rem;font-size:1.15rem;border-color:rgba(255,215,0,0.55);background:rgba(255,215,0,0.08);color:rgba(255,215,0,0.9);"
+        aria-label="Mine resource"
+      >⛏</button>
     </div>
 
-    <!-- Sound toggle + hint -->
-    <div class="mt-2 flex items-center justify-center gap-4">
-      <button
-        id="cq-sound"
-        class="pixel-label-xs rounded border border-slate-700 px-2 py-1 text-slate-500 transition hover:border-slate-500 hover:text-slate-300"
-      >
-        🔇 SOUND OFF
-      </button>
-      <span class="pixel-label-xs hidden text-slate-600 sm:inline">ARROWS / WASD TO EXPLORE</span>
-    </div>
+    <p class="pixel-label-xs mt-2 hidden text-center text-slate-600 sm:block">ARROWS / WASD to move · SPACE to mine</p>
   </div>
 </section>
 
@@ -153,67 +162,56 @@ import SectionTitle from './SectionTitle.astro';
 
 <script>
   // ─── CONSTANTS ────────────────────────────────────────────────────────────────
-  /** Tile size in canvas pixels */
-  const TILE = 32;
-  /** World dimensions in tiles */
+  const TILE       = 32;
   const WORLD_COLS = 24;
   const WORLD_ROWS = 20;
-  /** Viewport (canvas) size in canvas pixels */
-  const VW = 480;
-  const VH = 400;
-  /** Mini-map: 3 px per tile, positioned top-right of canvas */
-  const MT = 3;
-  const MW = WORLD_COLS * MT; // 72
-  const MH = WORLD_ROWS * MT; // 60
-  const MX = VW - MW - 5;
-  const MY = 5;
-
-  const BOB_SPEED  = 650;
-  const BOB_AMP    = 3;
-  /** Canvas pixels per art-pixel for the player sprite */
+  const VW         = 480;
+  const VH         = 400;
+  const MT         = 3;
+  const MW         = WORLD_COLS * MT;
+  const MH         = WORLD_ROWS * MT;
+  const MX         = VW - MW - 5;
+  const MY         = 5;
+  const BOB_SPEED  = 700;
+  const BOB_AMP    = 2.5;
   const ART        = 3;
-  const ITEM_FONT  = '6px "Press Start 2P", monospace';
-  const ARROW_KEYS = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'] as const;
+  const ITEM_FONT  = '5px "Press Start 2P", monospace';
+  const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'] as const;
+  const MINE_HITS  = 3; // swings required to collect a node
 
   // ─── TILE IDS ─────────────────────────────────────────────────────────────────
   const TG = 0; // grass
   const TW = 1; // tree / wall (impassable)
   const TP = 2; // path / dirt
   const TQ = 3; // water (impassable)
-  const TF = 4; // flower (walkable grass + flower)
+  const TF = 4; // flower
   const TC = 5; // cave floor
-  const TS = 6; // stone / brick floor (experience trail)
+  const TS = 6; // stone floor
   const TK = 7; // cabin wood floor
   const TM = 8; // metal workshop floor
 
   // ─── WORLD MAP ────────────────────────────────────────────────────────────────
-  // 24 cols × 20 rows.
-  // Upper half (rows 1-8):  cols 1-6 = Skill Garden | cols 7-8 = tree sep |
-  //   cols 9-12 = Code Valley Hub | cols 13-14 = tree sep | cols 15-22 = GitHub Cave
-  // Main path (rows 9-11):  cols 1-22 all walkable
-  // Lower half (rows 12-18): cols 1-6 = Experience Trail | cols 7-8 = tree sep |
-  //   cols 9-12 = Contact Cabin | cols 13-14 = tree sep | cols 15-22 = Project Workshop
   const MAP: number[][] = [
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], // r0  boundary
-    [1,0,0,0,0,0,0,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1], // r1
-    [1,0,4,0,0,4,0,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1], // r2
-    [1,0,0,0,3,0,0,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1], // r3  pond starts
-    [1,0,0,3,3,3,0,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1], // r4  pond centre
-    [1,0,4,3,0,0,4,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1], // r5  pond ends
-    [1,0,0,0,0,0,0,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1], // r6
-    [1,0,4,0,0,0,4,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1], // r7
-    [1,0,0,0,0,0,0,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1], // r8
-    [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1], // r9  main path
-    [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1], // r10 main path (player start)
-    [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1], // r11 main path
-    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1], // r12
-    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1], // r13
-    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1], // r14
-    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1], // r15
-    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1], // r16
-    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1], // r17
-    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1], // r18
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], // r19 boundary
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1],
+    [1,0,4,0,0,4,0,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1],
+    [1,0,0,0,3,0,0,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1],
+    [1,0,0,3,3,3,0,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1],
+    [1,0,4,3,0,0,4,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1],
+    [1,0,0,0,0,0,0,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1],
+    [1,0,4,0,0,0,4,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1],
+    [1,0,0,0,0,0,0,1,1,2,2,2,2,1,1,5,5,5,5,5,5,5,5,1],
+    [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+    [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+    [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1],
+    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1],
+    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1],
+    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1],
+    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1],
+    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1],
+    [1,6,6,6,6,6,6,1,1,7,7,7,7,1,1,8,8,8,8,8,8,8,8,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
   ];
 
   // ─── ZONES ────────────────────────────────────────────────────────────────────
@@ -222,79 +220,73 @@ import SectionTitle from './SectionTitle.astro';
     c0: number; c1: number; r0: number; r1: number;
   }
   const ZONES: ZoneDef[] = [
-    { id:'main_path', name:'Main Path',        color:'#00f5ff', c0:1,  c1:22, r0:9,  r1:11 },
-    { id:'skill',     name:'Skill Garden',      color:'#39ff14', c0:1,  c1:6,  r0:1,  r1:8  },
-    { id:'hub',       name:'Code Valley Hub',   color:'#00f5ff', c0:9,  c1:12, r0:1,  r1:8  },
-    { id:'cave',      name:'GitHub Cave',        color:'#ffd700', c0:15, c1:22, r0:1,  r1:8  },
-    { id:'trail',     name:'Experience Trail',   color:'#ffd700', c0:1,  c1:6,  r0:12, r1:18 },
-    { id:'cabin',     name:'Contact Cabin',      color:'#ff6b35', c0:9,  c1:12, r0:12, r1:18 },
-    { id:'workshop',  name:'Project Workshop',   color:'#bf5fff', c0:15, c1:22, r0:12, r1:18 },
+    { id:'main_path', name:'Main Path',       color:'#00f5ff', c0:1,  c1:22, r0:9,  r1:11 },
+    { id:'skill',     name:'Skill Garden',     color:'#39ff14', c0:1,  c1:6,  r0:1,  r1:8  },
+    { id:'hub',       name:'Code Valley Hub',  color:'#00f5ff', c0:9,  c1:12, r0:1,  r1:8  },
+    { id:'cave',      name:'GitHub Cave',       color:'#ffd700', c0:15, c1:22, r0:1,  r1:8  },
+    { id:'trail',     name:'Experience Trail',  color:'#ffd700', c0:1,  c1:6,  r0:12, r1:18 },
+    { id:'cabin',     name:'Contact Cabin',     color:'#ff6b35', c0:9,  c1:12, r0:12, r1:18 },
+    { id:'workshop',  name:'Project Workshop',  color:'#bf5fff', c0:15, c1:22, r0:12, r1:18 },
   ];
-
   function getZone(col: number, row: number): ZoneDef | null {
     return ZONES.find(z => col >= z.c0 && col <= z.c1 && row >= z.r0 && row <= z.r1) ?? null;
   }
 
-  // ─── COLLECTIBLES ─────────────────────────────────────────────────────────────
-  type ShapeType = 'circle'|'square'|'diamond'|'star'|'coin'|'gem'|'trophy'|'hex';
+  // ─── ORE NODES (collectibles) ─────────────────────────────────────────────────
   interface ItemDef {
     col: number; row: number; label: string;
-    color: string; shape: ShapeType;
-    title: string; msg: string; xp: number; phase: number;
+    color: string; phase: number;
+    title: string; msg: string; xp: number;
   }
   const ITEMS: ItemDef[] = [
-    // Skill Garden
-    { col:1,  row:2,  label:'REACT', color:'#00f5ff', shape:'circle',  title:'★ SKILL UNLOCKED', msg:'React · Component Architecture · Modern Frontend Engineering',             xp:100, phase:0  },
-    { col:5,  row:1,  label:'.NET',  color:'#bf5fff', shape:'diamond', title:'★ SKILL UNLOCKED', msg:'.NET / C# · Backend APIs · Enterprise Application Design',                xp:100, phase:1  },
-    { col:1,  row:7,  label:'JS',    color:'#ffd700', shape:'square',  title:'★ SKILL UNLOCKED', msg:'JavaScript · TypeScript · HTML & CSS · Web Platform Fundamentals',        xp:100, phase:2  },
-    { col:6,  row:5,  label:'CLOUD', color:'#39ff14', shape:'hex',     title:'★ SKILL UNLOCKED', msg:'Cloud Platforms · CI/CD · Scalable Infrastructure · DevOps',              xp:100, phase:3  },
-    // GitHub Cave
-    { col:17, row:2,  label:'GH★',   color:'#ffd700', shape:'star',    title:'★ ACHIEVEMENT',    msg:'Open Source Contributor · GitHub: RazorRyan · Community Collaboration',   xp:100, phase:4  },
-    { col:20, row:6,  label:'GEM',   color:'#39ff14', shape:'gem',     title:'★ CODE GEM',       msg:'Java · SQL & Databases · Integration Engineering · Technical Breadth',    xp:100, phase:5  },
-    // Experience Trail
-    { col:2,  row:13, label:'LEAD',  color:'#ffd700', shape:'trophy',  title:'★ ACHIEVEMENT',    msg:'Technical Leadership · Team Enablement · Engineering Direction · Mentorship', xp:100, phase:6  },
-    { col:5,  row:17, label:'ARCH',  color:'#00b4d8', shape:'diamond', title:'★ ACHIEVEMENT',    msg:'Architecture & Scalable Platforms · Microservices · API Design · Cloud Patterns', xp:100, phase:7  },
-    // Project Workshop
-    { col:17, row:13, label:'ENT',   color:'#ffd700', shape:'square',  title:'★ PROJECT FOUND',  msg:'Enterprise Platform Initiative · System Architecture · Reliable Delivery', xp:100, phase:8  },
-    { col:20, row:16, label:'AI',    color:'#ff2d78', shape:'coin',    title:'★ PROJECT FOUND',  msg:'AI-Enabled Solution Delivery · LLM Integration · Intelligent Systems Design', xp:100, phase:9  },
-    // Contact Cabin
-    { col:11, row:15, label:'📬',    color:'#ff6b35', shape:'star',    title:'★ FINAL QUEST',    msg:'Work with Ryan! Senior Software Engineer / Tech Lead · Lets build something great.', xp:100, phase:10 },
+    { col:1,  row:2,  label:'REACT', color:'#00f5ff', phase:0,  title:'★ SKILL MINED',   msg:'React · Component Architecture · Modern Frontend Engineering',                xp:100 },
+    { col:5,  row:1,  label:'.NET',  color:'#bf5fff', phase:1,  title:'★ SKILL MINED',   msg:'.NET / C# · Backend APIs · Enterprise Application Design',                    xp:100 },
+    { col:1,  row:7,  label:'JS',    color:'#ffd700', phase:2,  title:'★ SKILL MINED',   msg:'JavaScript · TypeScript · HTML & CSS · Web Platform Fundamentals',            xp:100 },
+    { col:6,  row:5,  label:'CLOUD', color:'#39ff14', phase:3,  title:'★ SKILL MINED',   msg:'Cloud Platforms · CI/CD · Scalable Infrastructure · DevOps',                  xp:100 },
+    { col:17, row:2,  label:'GH★',   color:'#ffd700', phase:4,  title:'★ ACHIEVEMENT',   msg:'Open Source Contributor · GitHub: RazorRyan · Community Collaboration',       xp:100 },
+    { col:20, row:6,  label:'GEM',   color:'#39ff14', phase:5,  title:'★ CODE GEM',      msg:'Java · SQL & Databases · Integration Engineering · Technical Breadth',        xp:100 },
+    { col:2,  row:13, label:'LEAD',  color:'#ffd700', phase:6,  title:'★ ACHIEVEMENT',   msg:'Technical Leadership · Team Enablement · Engineering Direction · Mentorship', xp:100 },
+    { col:5,  row:17, label:'ARCH',  color:'#00b4d8', phase:7,  title:'★ ACHIEVEMENT',   msg:'Architecture & Scalable Platforms · Microservices · API Design · Cloud',       xp:100 },
+    { col:17, row:13, label:'ENT',   color:'#ffd700', phase:8,  title:'★ PROJECT MINED', msg:'Enterprise Platform Initiative · System Architecture · Reliable Delivery',     xp:100 },
+    { col:20, row:16, label:'AI',    color:'#ff2d78', phase:9,  title:'★ PROJECT MINED', msg:'AI-Enabled Solution Delivery · LLM Integration · Intelligent Systems Design',  xp:100 },
+    { col:11, row:15, label:'📬',    color:'#ff6b35', phase:10, title:'★ FINAL QUEST',   msg:'Work with Ryan! Senior Software Engineer / Tech Lead · Lets build something great.', xp:100 },
   ];
 
   // ─── MINI-MAP TILE COLOURS ────────────────────────────────────────────────────
   const MINI_COLORS: Record<number, string> = {
-    [TG]: '#1a4220',  // grass
-    [TW]: '#080810',  // tree/wall
-    [TP]: '#3d2e18',  // path
-    [TQ]: '#003399',  // water
-    [TF]: '#1e5228',  // flower (slightly lighter green)
-    [TC]: '#0d0d20',  // cave
-    [TS]: '#2a2935',  // stone
-    [TK]: '#3d2415',  // cabin
-    [TM]: '#1a1a28',  // metal
+    [TG]: '#1a4220',
+    [TW]: '#080810',
+    [TP]: '#3d2e18',
+    [TQ]: '#003399',
+    [TF]: '#1e5228',
+    [TC]: '#0d0d20',
+    [TS]: '#2a2935',
+    [TK]: '#3d2415',
+    [TM]: '#1a1a28',
   };
 
   // ─── DOM REFS ─────────────────────────────────────────────────────────────────
-  const canvas    = document.getElementById('cq-canvas') as HTMLCanvasElement | null;
-  const ctx       = canvas?.getContext('2d') ?? null;
-  const hudEl     = document.getElementById('cq-hud');
-  const hudXP     = document.getElementById('cq-xp');
-  const hudZone   = document.getElementById('cq-zone');
-  const hudItems  = document.getElementById('cq-items');
-  const startEl   = document.getElementById('cq-start');
-  const startBtn  = document.getElementById('cq-start-btn');
-  const dlgEl     = document.getElementById('cq-dialogue');
-  const dlgTitle  = document.getElementById('cq-dlg-title');
-  const dlgMsg    = document.getElementById('cq-dlg-msg');
-  const dlgOk     = document.getElementById('cq-dlg-ok');
-  const winEl     = document.getElementById('cq-win');
-  const winXP     = document.getElementById('cq-win-xp');
+  const canvas     = document.getElementById('cq-canvas') as HTMLCanvasElement | null;
+  const ctx        = canvas?.getContext('2d') ?? null;
+  const hudEl      = document.getElementById('cq-hud');
+  const hudXP      = document.getElementById('cq-xp');
+  const hudZone    = document.getElementById('cq-zone');
+  const hudItems   = document.getElementById('cq-items');
+  const startEl    = document.getElementById('cq-start');
+  const startBtn   = document.getElementById('cq-start-btn');
+  const dlgEl      = document.getElementById('cq-dialogue');
+  const dlgTitle   = document.getElementById('cq-dlg-title');
+  const dlgMsg     = document.getElementById('cq-dlg-msg');
+  const dlgOk      = document.getElementById('cq-dlg-ok');
+  const winEl      = document.getElementById('cq-win');
+  const winXP      = document.getElementById('cq-win-xp');
   const restartBtn = document.getElementById('cq-restart-btn');
-  const soundBtn  = document.getElementById('cq-sound');
-  const bannerEl  = document.getElementById('cq-banner');
-  const bannerSub = document.getElementById('cq-banner-sub');
+  const soundBtn   = document.getElementById('cq-sound');
+  const bannerEl   = document.getElementById('cq-banner');
+  const bannerSub  = document.getElementById('cq-banner-sub');
   const bannerName = document.getElementById('cq-banner-name');
-  const sectionEl = document.getElementById('mini-game');
+  const actionBtn  = document.getElementById('cq-action');
+  const sectionEl  = document.getElementById('mini-game');
 
   if (!canvas || !ctx) {
     const w = document.getElementById('cq-wrapper');
@@ -305,30 +297,116 @@ import SectionTitle from './SectionTitle.astro';
 
   // ═══════════════════════════════════════════════════════════════════════════════
   function initGame(): void {
+
     // ─── STATE ────────────────────────────────────────────────────────────────
     type GameState = 'start' | 'playing' | 'dialogue' | 'won';
     let state: GameState = 'start';
-    let playerCol   = 11;
-    let playerRow   = 10;
+    let playerCol  = 11;
+    let playerRow  = 10;
     let facing: 'up'|'down'|'left'|'right' = 'down';
-    let walkCount   = 0;          // increments each move, used for walk frame
-    let camX        = 0.0;        // current camera x (canvas pixels, float for lerp)
-    let camY        = 0.0;
-    let collected   = new Array<boolean>(ITEMS.length).fill(false);
-    let xp          = 0;
+    let walkCount  = 0;
+    let camX       = 0.0;
+    let camY       = 0.0;
+    let collected  = new Array<boolean>(ITEMS.length).fill(false);
+    let mineHits   = new Array<number>(ITEMS.length).fill(0);
+    let xp         = 0;
     let discoveredZones = new Set<string>();
     let currentZoneId   = '';
-    let bannerUntil     = 0;      // performance.now() timestamp when banner should hide
+    let bannerUntil     = 0;
     let soundEnabled    = false;
     let audioCtx: AudioContext | null = null;
     let rafId: number | null = null;
-    let isInView        = false;
+    let isInView   = false;
+    let lastTs     = 0;
 
-    // Snap camera to player on init
+    // mining
+    let miningItemIdx   = -1;   // index of item player is standing on (-1 = none)
+    let miningAnim      = false;
+    let miningAnimStart = 0;
+    let miningAnimDir: 'up'|'down'|'left'|'right' = 'down';
+    let hitFlashIdx     = -1;
+    let hitFlashStart   = 0;
+
+    // ─── PARTICLES ────────────────────────────────────────────────────────────
+    interface Particle {
+      x: number; y: number;
+      vx: number; vy: number;
+      color: string;
+      life: number;    // 1→0
+      decay: number;   // life units per second
+      size: number;
+    }
+    let particles: Particle[] = [];
+
+    function spawnParticles(
+      wx: number, wy: number, color: string,
+      count: number, speed: number, spread = Math.PI * 2
+    ): void {
+      for (let i = 0; i < count; i++) {
+        const angle = -Math.PI / 2 + (Math.random() - 0.5) * spread;
+        const vel   = (0.4 + Math.random() * 0.6) * speed;
+        particles.push({
+          x: wx, y: wy,
+          vx: Math.cos(angle) * vel,
+          vy: Math.sin(angle) * vel,
+          color,
+          life: 1.0,
+          decay: 1.5 + Math.random() * 1.5,
+          size: 1 + Math.random() * 2.5,
+        });
+      }
+    }
+
+    function spawnMineParticles(item: ItemDef): void {
+      const wx = item.col * TILE + TILE / 2;
+      const wy = item.row * TILE + TILE / 2;
+      spawnParticles(wx, wy, '#8a8a9e', 5, 1.6);
+      spawnParticles(wx, wy, '#5a5a6e', 3, 1.0);
+      spawnParticles(wx, wy, item.color, 4, 2.2);
+    }
+
+    function spawnCollectParticles(item: ItemDef): void {
+      const wx = item.col * TILE + TILE / 2;
+      const wy = item.row * TILE + TILE / 2;
+      spawnParticles(wx, wy, item.color, 20, 2.8);
+      spawnParticles(wx, wy, '#ffffff', 10, 3.5);
+      spawnParticles(wx, wy, '#ffd700',  8, 2.0);
+    }
+
+    function updateParticles(dt: number): void {
+      const F = dt * 60;
+      particles = particles.filter(p => {
+        p.x  += p.vx * F;
+        p.y  += p.vy * F;
+        p.vy += 0.06 * F;   // gravity
+        p.vx *= Math.pow(0.96, F);  // friction
+        p.life -= p.decay * dt;
+        return p.life > 0;
+      });
+    }
+
+    function drawParticles(): void {
+      if (!ctx) return;
+      ctx.save();
+      for (const p of particles) {
+        ctx.globalAlpha = Math.max(0, p.life) * 0.92;
+        ctx.fillStyle = p.color;
+        const sx = Math.round(p.x - camX);
+        const sy = Math.round(p.y - camY);
+        if (sx > -8 && sx < VW + 8 && sy > -8 && sy < VH + 8) {
+          const s = Math.ceil(p.size);
+          ctx.fillRect(sx - (s >> 1), sy - (s >> 1), s, s);
+        }
+      }
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+
+    // Snap camera
     camX = clampCam(playerCol * TILE + TILE / 2 - VW / 2, false);
     camY = clampCam(playerRow * TILE + TILE / 2 - VH / 2, true);
 
-    // ─── VISIBILITY OBSERVER ──────────────────────────────────────────────────
+    // ─── INTERSECTION OBSERVER ────────────────────────────────────────────────
     if (sectionEl) {
       new IntersectionObserver(
         (entries) => { isInView = entries[0]?.isIntersecting ?? false; },
@@ -341,21 +419,22 @@ import SectionTitle from './SectionTitle.astro';
       const maxV = isY ? WORLD_ROWS * TILE - VH : WORLD_COLS * TILE - VW;
       return Math.max(0, Math.min(maxV, v));
     }
-
     function tilePassable(col: number, row: number): boolean {
       if (col < 0 || col >= WORLD_COLS || row < 0 || row >= WORLD_ROWS) return false;
       const t = MAP[row][col];
       return t !== TW && t !== TQ;
     }
+    function hash(col: number, row: number, s = 1): number {
+      return Math.abs((col * 73856093) ^ (row * 19349663) ^ (s * 83492791)) % 1000 / 1000;
+    }
 
     // ─── AUDIO ────────────────────────────────────────────────────────────────
     function getAC(): AudioContext {
-      // Support standard AudioContext and the older webkit-prefixed variant
       const AC = window.AudioContext ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (!audioCtx) audioCtx = new AC();
       return audioCtx;
     }
-    function beep(freq: number, dur: number, vol = 0.1, type: OscillatorType = 'square'): void {
+    function beep(freq: number, dur: number, vol = 0.07, type: OscillatorType = 'square'): void {
       if (!soundEnabled) return;
       try {
         const ac = getAC();
@@ -369,29 +448,113 @@ import SectionTitle from './SectionTitle.astro';
         osc.start(ac.currentTime); osc.stop(ac.currentTime + dur);
       } catch { /* ignore */ }
     }
-    function playMove():     void { beep(200, 0.04, 0.04); }
-    function playCollect():  void { beep(523,0.07); setTimeout(()=>beep(659,0.07),60); setTimeout(()=>beep(784,0.14),120); }
-    function playDiscover(): void { beep(400,0.08); setTimeout(()=>beep(500,0.10),90); }
-    function playWin():      void { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,0.2,0.1),i*130)); }
-    function playBump():     void { beep(100, 0.05, 0.05); }
+    function playMove():    void { beep(220, 0.04, 0.025, 'sine'); }
+    function playHit():     void {
+      beep(180, 0.06, 0.09, 'square');
+      setTimeout(() => beep(130, 0.05, 0.06, 'sawtooth'), 45);
+    }
+    function playCollect(): void {
+      [523, 659, 784, 1047].forEach((f, i) =>
+        setTimeout(() => beep(f, 0.12, 0.10, 'triangle'), i * 75));
+    }
+    function playDiscover(): void {
+      beep(400, 0.08, 0.06, 'triangle');
+      setTimeout(() => beep(500, 0.10, 0.06, 'triangle'), 90);
+    }
+    function playWin(): void {
+      [523, 659, 784, 1047, 1319].forEach((f, i) =>
+        setTimeout(() => beep(f, 0.20, 0.10, 'triangle'), i * 120));
+    }
+    function playBump(): void { beep(100, 0.06, 0.05, 'sawtooth'); }
 
-    // ─── TILE DRAWING ─────────────────────────────────────────────────────────
-    /**
-     * Deterministic pseudo-random number in [0, 1) based on tile coordinates.
-     * The large primes are chosen to minimise spatial correlation between
-     * adjacent tiles so texture variation looks naturally irregular.
-     */
-    function hash(col: number, row: number, s = 1): number {
-      return Math.abs((col * 73856093) ^ (row * 19349663) ^ (s * 83492791)) % 1000 / 1000;
+    // ─── BACKGROUND MUSIC ─────────────────────────────────────────────────────
+    // A minor pentatonic: A3 C4 D4 E4 G4 A4 C5 D5
+    const MUSIC_FREQS = [220.00, 261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33];
+    const BASS_FREQS  = [110.00, 130.81, 146.83, 164.81, 196.00]; // A2 C3 D3 E3 G3
+    // Gentle arpeggio melody (indices into MUSIC_FREQS)
+    const MELODY_STEPS = [2,4,5,4, 3,4,2,0, 5,6,5,4, 3,2,1,2, 4,5,7,5, 4,3,5,4, 2,0,1,2, 3,4,5,3];
+    const BASS_DEGS    = [0, 0, 2, 3]; // index into BASS_FREQS, cycles every 2 beats
+    const BEAT_DUR     = 60.0 / 88.0;  // seconds per beat @ 88 BPM
+    const HALF_BEAT    = BEAT_DUR / 2;
+    const LOOK_AHEAD   = 0.28;         // seconds to schedule ahead
+
+    let musicTimerId: number | null = null;
+    let nextNoteTime = 0.0;
+    let musicStep    = 0;
+
+    function playMusicNote(freq: number, t: number, dur: number, type: OscillatorType, vol: number): void {
+      try {
+        const ac = getAC();
+        const osc  = ac.createOscillator();
+        const gain = ac.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(vol, t + Math.min(0.04, dur * 0.15));
+        gain.gain.setValueAtTime(vol * 0.75, t + dur * 0.65);
+        gain.gain.linearRampToValueAtTime(0, t + dur);
+        osc.connect(gain); gain.connect(ac.destination);
+        osc.start(t); osc.stop(t + dur + 0.02);
+      } catch { /* ignore */ }
     }
 
-    function drawGrass(x: number, y: number, col: number, row: number): void {
+    function scheduleMusicBatch(): void {
+      if (!soundEnabled) return;
+      try {
+        const ac  = getAC();
+        const now = ac.currentTime;
+        if (nextNoteTime < now) nextNoteTime = now;
+        while (nextNoteTime < now + LOOK_AHEAD) {
+          const t = nextNoteTime;
+          // Melody (triangle – warm)
+          const mFreq = MUSIC_FREQS[MELODY_STEPS[musicStep % MELODY_STEPS.length]];
+          playMusicNote(mFreq, t, HALF_BEAT * 0.72, 'triangle', 0.026);
+          // Bass (sine – every 4 half-beats = 2 full beats)
+          if (musicStep % 4 === 0) {
+            const bFreq = BASS_FREQS[BASS_DEGS[Math.floor(musicStep / 4) % BASS_DEGS.length]];
+            playMusicNote(bFreq, t, BEAT_DUR * 1.85, 'sine', 0.038);
+          }
+          // Ambient chord pad (Am: A+C+E) – every 32 half-beats = 16 beats
+          if (musicStep % 32 === 0) {
+            [BASS_FREQS[0] * 2, BASS_FREQS[1] * 2, MUSIC_FREQS[3]].forEach(f => {
+              playMusicNote(f, t, BEAT_DUR * 14, 'sine', 0.011);
+            });
+          }
+          musicStep++;
+          nextNoteTime += HALF_BEAT;
+        }
+      } catch { /* ignore */ }
+    }
+
+    function startMusic(): void {
+      if (musicTimerId !== null) return;
+      nextNoteTime = 0;
+      musicStep    = 0;
+      musicTimerId = window.setInterval(scheduleMusicBatch, 80);
+    }
+    function stopMusic(): void {
+      if (musicTimerId !== null) {
+        window.clearInterval(musicTimerId);
+        musicTimerId = null;
+      }
+    }
+
+    // ─── TILE DRAWING ─────────────────────────────────────────────────────────
+    function drawGrass(x: number, y: number, col: number, row: number, ts: number): void {
       if (!ctx) return;
-      ctx.fillStyle = '#1a4220'; ctx.fillRect(x, y, TILE, TILE);
+      const g = 0x42 + Math.floor(Math.sin(ts / 3200 + col * 0.31 + row * 0.47) * 4);
+      ctx.fillStyle = '#1a' + g.toString(16).padStart(2, '0') + '20';
+      ctx.fillRect(x, y, TILE, TILE);
       ctx.fillStyle = '#1f4e26';
       for (let i = 0; i < 4; i++) {
         const h = hash(col, row, i);
         ctx.fillRect(x + Math.floor(h * (TILE - 3)), y + Math.floor(hash(col + i, row, 99) * (TILE - 3)), 2, 2);
+      }
+      // Occasional tall blade
+      if (hash(col, row, 42) > 0.72) {
+        ctx.fillStyle = '#2d6e30';
+        const gx = x + Math.floor(hash(col, row, 55) * (TILE - 4)) + 2;
+        ctx.fillRect(gx, y + TILE - 7, 1, 6);
       }
     }
 
@@ -403,24 +566,30 @@ import SectionTitle from './SectionTitle.astro';
         const h = hash(col, row, i + 5);
         ctx.fillRect(x + Math.floor(h * (TILE - 2)), y + Math.floor(hash(col, row + i, 77) * (TILE - 2)), 3, 1);
       }
-      // Edge lines for path borders
-      if (row === 9)  { ctx.fillStyle = 'rgba(0,245,255,0.10)'; ctx.fillRect(x, y, TILE, 2); }
-      if (row === 11) { ctx.fillStyle = 'rgba(0,245,255,0.10)'; ctx.fillRect(x, y + TILE - 2, TILE, 2); }
+      if (row === 9)  { ctx.fillStyle = 'rgba(0,245,255,0.13)'; ctx.fillRect(x, y, TILE, 2); }
+      if (row === 11) { ctx.fillStyle = 'rgba(0,245,255,0.13)'; ctx.fillRect(x, y + TILE - 2, TILE, 2); }
     }
 
     function drawCave(x: number, y: number, col: number, row: number, ts: number): void {
       if (!ctx) return;
-      ctx.fillStyle = '#0d0d20'; ctx.fillRect(x, y, TILE, TILE);
-      if ((col + row) % 2 === 0) { ctx.fillStyle = '#14143a'; ctx.fillRect(x + 2, y + 2, TILE - 4, TILE - 4); }
-      // Crystal sparkle in some tiles
+      ctx.fillStyle = '#0a0a1e'; ctx.fillRect(x, y, TILE, TILE);
+      if ((col + row) % 2 === 0) { ctx.fillStyle = '#12123a'; ctx.fillRect(x + 2, y + 2, TILE - 4, TILE - 4); }
+      // Crystal sparkle
       if (((col * 7 + row * 11) % 5) === 0) {
-        const alpha = 0.35 + Math.sin(ts / 900 + col * 1.4 + row * 1.7) * 0.30;
-        const cx = x + Math.floor(hash(col, row, 3) * (TILE - 8)) + 4;
-        const cy = y + Math.floor(hash(col, row, 7) * (TILE - 8)) + 4;
+        const alpha = 0.28 + Math.sin(ts / 900 + col * 1.4 + row * 1.7) * 0.35;
+        const cx2 = x + Math.floor(hash(col, row, 3) * (TILE - 8)) + 4;
+        const cy2 = y + Math.floor(hash(col, row, 7) * (TILE - 8)) + 4;
         ctx.fillStyle = `rgba(80,130,255,${alpha})`;
-        ctx.fillRect(cx, cy, 2, 2);
-        ctx.fillRect(cx - 1, cy, 1, 2); ctx.fillRect(cx + 2, cy, 1, 2);
-        ctx.fillRect(cx, cy - 1, 2, 1); ctx.fillRect(cx, cy + 2, 2, 1);
+        ctx.fillRect(cx2, cy2, 2, 2);
+        ctx.fillRect(cx2 - 1, cy2, 1, 2); ctx.fillRect(cx2 + 2, cy2, 1, 2);
+        ctx.fillRect(cx2, cy2 - 1, 2, 1); ctx.fillRect(cx2, cy2 + 2, 2, 1);
+      }
+      // Stalactite at top rows
+      if (row <= 2) {
+        ctx.fillStyle = '#060612';
+        const sw = 3 + Math.floor(hash(col, row, 88) * 6);
+        const sx2 = x + Math.floor(hash(col, row, 77) * (TILE - sw));
+        ctx.fillRect(sx2, y, sw, 3 + Math.floor(hash(col, row, 66) * 6));
       }
     }
 
@@ -441,8 +610,7 @@ import SectionTitle from './SectionTitle.astro';
       ctx.fillStyle = '#4a2d1a';
       const planky = (row * 16 + 8) % TILE;
       ctx.fillRect(x, y + planky, TILE, 2);
-      ctx.fillStyle = '#2e1a0d';
-      ctx.fillRect(x + (col * 17 % TILE), y, 1, TILE);
+      ctx.fillStyle = '#2e1a0d'; ctx.fillRect(x + (col * 17 % TILE), y, 1, TILE);
       ctx.fillStyle = '#5a3820'; ctx.fillRect(x + 2, y + 2, 4, 4);
     }
 
@@ -459,191 +627,276 @@ import SectionTitle from './SectionTitle.astro';
     function drawWater(x: number, y: number, col: number, ts: number): void {
       if (!ctx) return;
       const w = 0.85 + Math.sin(ts / 900 + col * 0.8) * 0.15;
-      ctx.fillStyle = `rgb(0,${Math.floor(60 * w)},${Math.floor(190 * w)})`; ctx.fillRect(x, y, TILE, TILE);
+      ctx.fillStyle = `rgb(0,${Math.floor(60 * w)},${Math.floor(190 * w)})`;
+      ctx.fillRect(x, y, TILE, TILE);
       const shimA = 0.12 + Math.sin(ts / 500 + col * 1.2) * 0.10;
       ctx.fillStyle = `rgba(80,160,255,${shimA})`;
       ctx.fillRect(x, y + Math.floor(TILE * 0.3), TILE, 3);
       ctx.fillStyle = `rgba(120,200,255,${shimA * 0.6})`;
       ctx.fillRect(x, y + Math.floor(TILE * 0.65), TILE, 2);
+      if (col % 3 === 0) {
+        ctx.fillStyle = `rgba(200,240,255,${0.05 + Math.sin(ts / 700 + col * 2) * 0.03})`;
+        ctx.fillRect(x + 4, y + 8, TILE - 8, 2);
+      }
     }
 
     function drawFlower(x: number, y: number, col: number, row: number, ts: number): void {
       if (!ctx) return;
-      drawGrass(x, y, col, row);
+      drawGrass(x, y, col, row, ts);
       const sway = Math.sin(ts / 1400 + col * 0.6 + row * 0.8) * 1.5;
       const fx = x + Math.floor(hash(col, row, 11) * 18) + 7;
       const fy = y + Math.floor(hash(col, row, 13) * 18) + 7;
-      // stem
-      ctx.fillStyle = '#2d6e30';
-      ctx.fillRect(Math.round(fx + sway), fy, 1, 6);
-      // petals (hashed colour)
+      ctx.fillStyle = '#2d6e30'; ctx.fillRect(Math.round(fx + sway), fy, 1, 6);
       const hv = hash(col, row, 99);
       ctx.fillStyle = hv < 0.33 ? '#ff6b9d' : (hv < 0.66 ? '#ffd700' : '#ff8c42');
       ctx.fillRect(Math.round(fx - 1 + sway), fy - 3, 2, 2);
       ctx.fillRect(Math.round(fx - 1 + sway), fy + 1, 2, 2);
       ctx.fillRect(Math.round(fx - 3 + sway), fy - 1, 2, 2);
       ctx.fillRect(Math.round(fx + 1 + sway), fy - 1, 2, 2);
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(Math.round(fx + sway), fy - 1, 1, 1);
+      ctx.fillStyle = '#fff'; ctx.fillRect(Math.round(fx + sway), fy - 1, 1, 1);
     }
 
-    function drawTree(x: number, y: number, _col: number, row: number): void {
+    function drawTree(x: number, y: number, _col: number, row: number, ts: number): void {
       if (!ctx) return;
-      // Upper rows → green, lower rows → dark rock
       const isUpper = row <= 8;
+      const sway = isUpper ? Math.sin(ts / 2400 + x * 0.011) * 1 : 0;
       ctx.fillStyle = isUpper ? '#0d2310' : '#0d0d18';
       ctx.fillRect(x, y, TILE, TILE);
       ctx.fillStyle = isUpper ? '#142e17' : '#14141f';
       ctx.fillRect(x + 2, y + 2, TILE - 4, TILE - 4);
-      ctx.fillStyle = isUpper ? 'rgba(57,255,20,0.08)' : 'rgba(0,245,255,0.05)';
+      const edgeAlpha = (isUpper ? 0.06 : 0.05) + Math.abs(sway) * 0.015;
+      ctx.fillStyle = isUpper
+        ? `rgba(57,255,20,${edgeAlpha})`
+        : 'rgba(0,245,255,0.05)';
       ctx.fillRect(x, y, TILE, 2); ctx.fillRect(x, y, 2, TILE);
     }
 
-    // ─── SHAPE DRAWING ────────────────────────────────────────────────────────
-    function drawShape(item: ItemDef, cx: number, cy: number): void {
-      if (!ctx) return;
-      const R = 11;
-      ctx.fillStyle   = item.color + '55';
-      ctx.strokeStyle = item.color;
-      ctx.lineWidth   = 2;
-
-      switch (item.shape) {
-        case 'circle':
-          ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-          break;
-        case 'square':
-          ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
-          ctx.strokeRect(cx - R, cy - R, R * 2, R * 2);
-          break;
-        case 'diamond':
-          ctx.beginPath();
-          ctx.moveTo(cx, cy - R); ctx.lineTo(cx + R, cy);
-          ctx.lineTo(cx, cy + R); ctx.lineTo(cx - R, cy);
-          ctx.closePath(); ctx.fill(); ctx.stroke();
-          break;
-        case 'star': {
-          ctx.beginPath();
-          for (let i = 0; i < 10; i++) {
-            const a = i * Math.PI / 5 - Math.PI / 2;
-            const r = i % 2 === 0 ? R : R * 0.42;
-            const sx = cx + r * Math.cos(a), sy = cy + r * Math.sin(a);
-            i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
-          }
-          ctx.closePath(); ctx.fill(); ctx.stroke();
-          break;
-        }
-        case 'coin':
-          ctx.beginPath(); ctx.ellipse(cx, cy, R * 0.60, R, 0, 0, Math.PI * 2);
-          ctx.fill(); ctx.stroke();
-          break;
-        case 'gem':
-          ctx.beginPath();
-          ctx.moveTo(cx - R, cy - R * 0.25); ctx.lineTo(cx - R * 0.35, cy - R);
-          ctx.lineTo(cx + R * 0.35, cy - R); ctx.lineTo(cx + R, cy - R * 0.25);
-          ctx.lineTo(cx, cy + R);
-          ctx.closePath(); ctx.fill(); ctx.stroke();
-          break;
-        case 'hex': {
-          ctx.beginPath();
-          for (let i = 0; i < 6; i++) {
-            const a = i * Math.PI / 3 - Math.PI / 6;
-            const px = cx + R * Math.cos(a), py = cy + R * Math.sin(a);
-            i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-          }
-          ctx.closePath(); ctx.fill(); ctx.stroke();
-          break;
-        }
-        case 'trophy': {
-          ctx.beginPath();
-          ctx.moveTo(cx - R, cy - R); ctx.lineTo(cx - R * 0.6, cy + R * 0.1);
-          ctx.lineTo(cx - R * 0.2, cy + R * 0.25); ctx.lineTo(cx - R * 0.15, cy + R * 0.55);
-          ctx.lineTo(cx + R * 0.15, cy + R * 0.55); ctx.lineTo(cx + R * 0.2, cy + R * 0.25);
-          ctx.lineTo(cx + R * 0.6, cy + R * 0.1); ctx.lineTo(cx + R, cy - R);
-          ctx.closePath(); ctx.fill(); ctx.stroke();
-          ctx.fillRect(cx - R * 0.5, cy + R * 0.55, R * 1.0, R * 0.35);
-          ctx.strokeRect(cx - R * 0.5, cy + R * 0.55, R * 1.0, R * 0.35);
-          ctx.beginPath(); ctx.arc(cx - R, cy - R * 0.4, R * 0.25, Math.PI * 0.5, Math.PI * 1.5); ctx.stroke();
-          ctx.beginPath(); ctx.arc(cx + R, cy - R * 0.4, R * 0.25, -Math.PI * 0.5, Math.PI * 0.5); ctx.stroke();
-          break;
-        }
-      }
-    }
-
-    function drawItem(item: ItemDef, i: number, ts: number): void {
-      if (!ctx || collected[i]) return;
-      const bob = Math.sin(ts / BOB_SPEED + item.phase * 0.85) * BOB_AMP;
+    // ─── ORE NODE DRAWING ─────────────────────────────────────────────────────
+    function drawOreNode(item: ItemDef, idx: number, ts: number): void {
+      if (!ctx || collected[idx]) return;
       const wx = item.col * TILE;
       const wy = item.row * TILE;
       const cx = wx + TILE / 2 - camX;
-      const cy = wy + TILE / 2 - camY + bob;
-
-      // Skip if offscreen
+      const cy = wy + TILE / 2 - camY;
       if (cx < -TILE || cx > VW + TILE || cy < -TILE || cy > VH + TILE) return;
 
-      ctx.save();
-      ctx.shadowColor = item.color; ctx.shadowBlur = 14;
-      drawShape(item, cx, cy);
-      ctx.restore();
+      const bob  = Math.sin(ts / BOB_SPEED + item.phase * 0.85) * BOB_AMP;
+      const cy2  = cy + bob;
+      const hits = mineHits[idx];
 
-      // Label
+      // Hit flash
+      const flashAge = ts - hitFlashStart;
+      const flash = (hitFlashIdx === idx && flashAge < 280) ? Math.max(0, 1 - flashAge / 280) : 0;
+
+      // Shake when being mined
+      const mineAge = ts - miningAnimStart;
+      const shake = (miningItemIdx === idx && miningAnim && mineAge < 220)
+        ? Math.sin(mineAge * 0.11) * 2.8 : 0;
+      const rx = Math.round(cx + shake);
+      const ry = Math.round(cy2);
+
+      ctx.save();
+
+      // Outer glow pulse
+      const pulse = 0.38 + Math.sin(ts / 580 + item.phase) * 0.32;
+      ctx.shadowColor = flash > 0.1 ? '#ffffff' : item.color;
+      ctx.shadowBlur  = flash > 0 ? 22 + flash * 18 : (7 + pulse * 13);
+
+      // Rock body
+      ctx.fillStyle = flash > 0.25 ? `rgba(255,255,255,${flash * 0.75})` : '#26263c';
+      ctx.beginPath();
+      ctx.moveTo(rx - 11, ry -  4);
+      ctx.lineTo(rx -  7, ry - 11);
+      ctx.lineTo(rx +  3, ry - 12);
+      ctx.lineTo(rx + 11, ry -  4);
+      ctx.lineTo(rx + 10, ry +  5);
+      ctx.lineTo(rx +  4, ry + 11);
+      ctx.lineTo(rx -  6, ry + 10);
+      ctx.lineTo(rx - 12, ry +  3);
+      ctx.closePath();
+      ctx.fill();
+
+      // Rock outline
+      ctx.strokeStyle = flash > 0 ? `rgba(255,255,255,${flash * 0.9})` : '#3c3c5a';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Crack marks (increase with hits)
+      if (hits > 0) {
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = `rgba(0,0,0,${0.35 + hits * 0.18})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(rx - 4, ry - 8); ctx.lineTo(rx + 2, ry - 2); ctx.lineTo(rx, ry + 6); ctx.stroke();
+        if (hits >= 2) {
+          ctx.beginPath(); ctx.moveTo(rx + 5, ry - 6); ctx.lineTo(rx - 1, ry + 2); ctx.stroke();
+        }
+        ctx.shadowColor = item.color; ctx.shadowBlur = 7 + pulse * 13;
+      }
+
+      // Glowing ore vein
+      const oreA = 0.55 + pulse * 0.45;
+      ctx.globalAlpha = oreA;
+      ctx.fillStyle = item.color;
+      ctx.beginPath(); ctx.ellipse(rx, ry - 1, 4, 5, 0.15, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 0.25 + pulse * 0.45;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(rx - 1, ry - 3, 2, 2);
+      ctx.globalAlpha = 1;
+
+      // Label below rock
+      ctx.shadowBlur = 0;
       ctx.fillStyle = item.color;
       ctx.font = ITEM_FONT;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText(item.label, cx, cy2 + 14);
+
+      // Mining progress bar (shown while actively mining)
+      if (hits > 0 && miningItemIdx === idx) {
+        const bW = 30, bH = 4;
+        const bx = cx - bW / 2, by2 = cy2 - 24;
+        ctx.fillStyle = 'rgba(0,0,0,0.72)';
+        ctx.fillRect(bx - 1, by2 - 1, bW + 2, bH + 2);
+        ctx.fillStyle = item.color;
+        ctx.fillRect(bx, by2, Math.round(bW * hits / MINE_HITS), bH);
+      }
+
+      ctx.restore();
+    }
+
+    // ─── MINE PROMPT on canvas ─────────────────────────────────────────────────
+    function drawMinePrompt(ts: number): void {
+      if (!ctx || miningItemIdx < 0) return;
+      const item = ITEMS[miningItemIdx];
+      const cx = item.col * TILE + TILE / 2 - camX;
+      const cy = item.row * TILE - camY - 26;
+      if (cx < 0 || cx > VW) return;
+      const alpha = 0.65 + Math.sin(ts / 280) * 0.35;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = '#ffd700';
+      ctx.font = ITEM_FONT;
       ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-      ctx.fillText(item.label, cx, cy + TILE / 2 - bob - 1);
+      ctx.fillText('SPACE / Z', cx, cy);
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+
+    // ─── ZONE AMBIENT OVERLAY ─────────────────────────────────────────────────
+    function drawAmbient(): void {
+      if (!ctx) return;
+      const zone = getZone(
+        Math.floor((camX + VW / 2) / TILE),
+        Math.floor((camY + VH / 2) / TILE)
+      );
+      if (!zone) return;
+      let r = 0, g = 0, b = 0, a = 0;
+      if (zone.id === 'cave')  { r = 0;  g = 0;  b = 40; a = 0.30; }
+      if (zone.id === 'skill') { r = 0;  g = 40; b = 0;  a = 0.18; }
+      if (zone.id === 'trail') { r = 30; g = 25; b = 0;  a = 0.18; }
+      if (a === 0) return;
+      ctx.save();
+      const grad = ctx.createRadialGradient(VW / 2, VH / 2, 0, VW / 2, VH / 2, VW * 0.75);
+      grad.addColorStop(0, `rgba(${r},${g},${b},0)`);
+      grad.addColorStop(1, `rgba(${r},${g},${b},${a})`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, VW, VH);
+      ctx.restore();
     }
 
     // ─── PLAYER SPRITE ────────────────────────────────────────────────────────
-    function drawPlayer(_ts: number): void {
+    function drawPlayer(ts: number): void {
       if (!ctx) return;
       const cx = playerCol * TILE + TILE / 2 - camX;
       const cy = playerRow * TILE + TILE / 2 - camY;
-
-      // Sprite origin (top-left of 12×14 art-pixel sprite)
       const bx = cx - 6 * ART;
-      const by = cy - 6 * ART;
-      const wf = walkCount % 4 < 2; // walk frame (alternates every 2 moves)
+      const by = cy - 7 * ART;
+      const wf = walkCount % 4 < 2;
+
+      const swingAge  = ts - miningAnimStart;
+      const swinging  = miningAnim && swingAge < 300;
+      const swingProg = swinging ? swingAge / 300 : 0;
+      const swing     = swinging ? Math.sin(swingProg * Math.PI) : 0;
 
       ctx.save();
-      ctx.shadowColor = '#00f5ff'; ctx.shadowBlur = 6;
+      ctx.shadowColor = '#00f5ff'; ctx.shadowBlur = 7;
 
-      // Boots (walk animation: spread on frame 1)
+      // Ground shadow
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.fillRect(cx - 10, cy + TILE / 2 - 2, 20, 4);
+
+      ctx.shadowColor = '#00f5ff'; ctx.shadowBlur = 7;
+
+      // Boots
       ctx.fillStyle = '#111';
       if (wf) {
-        ctx.fillRect(bx + 2 * ART, by + 12 * ART, 3 * ART, ART);
-        ctx.fillRect(bx + 7 * ART, by + 12 * ART, 3 * ART, ART);
+        ctx.fillRect(bx + 2 * ART, by + 13 * ART, 3 * ART, ART);
+        ctx.fillRect(bx + 7 * ART, by + 13 * ART, 3 * ART, ART);
       } else {
-        ctx.fillRect(bx + 3 * ART, by + 12 * ART, 2 * ART, ART);
-        ctx.fillRect(bx + 7 * ART, by + 12 * ART, 2 * ART, ART);
+        ctx.fillRect(bx + 3 * ART, by + 13 * ART, 2 * ART, ART);
+        ctx.fillRect(bx + 7 * ART, by + 13 * ART, 2 * ART, ART);
       }
 
-      // Pants
+      // Trousers
       ctx.fillStyle = '#1a1a5e';
-      ctx.fillRect(bx + 3 * ART, by + 8 * ART, 2 * ART, 4 * ART);
-      ctx.fillRect(bx + 7 * ART, by + 8 * ART, 2 * ART, 4 * ART);
+      ctx.fillRect(bx + 3 * ART, by + 9 * ART, 2 * ART, 4 * ART);
+      ctx.fillRect(bx + 7 * ART, by + 9 * ART, 2 * ART, 4 * ART);
 
       // Shirt
       ctx.fillStyle = '#00b4d8';
-      ctx.fillRect(bx + 2 * ART, by + 4 * ART, 8 * ART, 4 * ART);
+      ctx.fillRect(bx + 2 * ART, by + 5 * ART, 8 * ART, 4 * ART);
 
-      // Arms (direction-aware: swing on walk)
+      // Belt buckle
+      ctx.fillStyle = '#ffd700';
+      ctx.fillRect(bx + 5 * ART, by + 8 * ART, 2 * ART, ART);
+
+      // Arms
       ctx.fillStyle = '#f0c090';
       const armSwing = wf ? ART : 0;
-      ctx.fillRect(bx,             by + 4 * ART + armSwing,     2 * ART, 4 * ART); // left
-      ctx.fillRect(bx + 10 * ART,  by + 4 * ART - armSwing,    2 * ART, 4 * ART); // right
+      if (swinging) {
+        // Swing arm toward mining direction
+        const aOff = Math.round(swing * 2 * ART);
+        if (miningAnimDir === 'right' || miningAnimDir === 'left') {
+          ctx.fillRect(bx, by + 5 * ART + armSwing, 2 * ART, 4 * ART);
+          const ax = miningAnimDir === 'right' ? bx + 10 * ART : bx - ART;
+          ctx.fillRect(ax, by + 5 * ART - aOff, 2 * ART, 4 * ART);
+          // pickaxe head
+          ctx.fillStyle = '#b0b0c8';
+          const px2 = miningAnimDir === 'right' ? ax + 2 * ART : ax - ART;
+          ctx.fillRect(px2, by + 5 * ART - aOff - ART, ART * 2, ART);
+          ctx.fillStyle = '#888899';
+          ctx.fillRect(px2 + (miningAnimDir === 'right' ? ART : -ART), by + 4 * ART - aOff, ART, ART);
+        } else {
+          ctx.fillRect(bx, by + 5 * ART + armSwing, 2 * ART, 4 * ART);
+          const ayOff = miningAnimDir === 'up' ? -aOff : aOff;
+          ctx.fillRect(bx + 10 * ART, by + 5 * ART + ayOff, 2 * ART, 4 * ART);
+          // pickaxe head
+          ctx.fillStyle = '#b0b0c8';
+          const pyOff = miningAnimDir === 'up' ? -ART : ART * 2;
+          ctx.fillRect(bx + 10 * ART - ART, by + 5 * ART + ayOff + pyOff, ART * 2, ART);
+        }
+      } else {
+        ctx.fillRect(bx,            by + 5 * ART + armSwing, 2 * ART, 4 * ART);
+        ctx.fillRect(bx + 10 * ART, by + 5 * ART - armSwing, 2 * ART, 4 * ART);
+      }
 
       // Head
       ctx.fillStyle = '#f0c090';
-      ctx.fillRect(bx + 4 * ART, by + 0, 4 * ART, 4 * ART);
+      ctx.fillRect(bx + 4 * ART, by, 4 * ART, 4 * ART);
+
+      // Hat brim
+      ctx.fillStyle = '#00b4d8';
+      ctx.fillRect(bx + 3 * ART, by - ART, 6 * ART, ART);
+      // Hat band
+      ctx.fillStyle = '#00f5ff';
+      ctx.fillRect(bx + 4 * ART, by, 4 * ART, ART);
 
       // Hair
       ctx.fillStyle = '#3d2b1f';
-      ctx.fillRect(bx + 4 * ART, by, 4 * ART, ART);
-      ctx.fillRect(bx + 4 * ART, by + ART,     ART,     ART);
-      ctx.fillRect(bx + 7 * ART, by + ART,     ART,     ART);
+      ctx.fillRect(bx + 4 * ART, by + ART, ART, ART);
+      ctx.fillRect(bx + 7 * ART, by + ART, ART, ART);
 
-      // Eyes (direction aware).
-      // When facing 'up' the player's back is to the camera — no eyes visible.
-      // Left/right shift the eye pair to hint at the look direction.
+      // Eyes
       ctx.fillStyle = '#1a1a2e';
       const eyeX = facing === 'left' ? 4 : (facing === 'right' ? 6 : 5);
       if (facing !== 'up') {
@@ -651,20 +904,9 @@ import SectionTitle from './SectionTitle.astro';
         ctx.fillRect(bx + (eyeX + 2) * ART, by + 2 * ART, ART, ART);
       }
 
-      // Neon badge
+      // Chest badge
       ctx.fillStyle = '#00f5ff';
-      ctx.fillRect(bx + 5 * ART, by + 5 * ART, 2 * ART, ART);
-
-      // Small facing arrow (subtle indicator below player)
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = 'rgba(0,245,255,0.55)';
-      const arrowY = cy + TILE / 2 + 2;
-      switch (facing) {
-        case 'down':  ctx.fillRect(cx - 2, arrowY,     4, 2); ctx.fillRect(cx - 1, arrowY + 2, 2, 1); break;
-        case 'up':    ctx.fillRect(cx - 2, arrowY,     4, 2); ctx.fillRect(cx - 1, arrowY - 1, 2, 1); break;
-        case 'left':  ctx.fillRect(cx - 4, arrowY + 1, 4, 1); ctx.fillRect(cx - 3, arrowY,     1, 3); break;
-        case 'right': ctx.fillRect(cx,     arrowY + 1, 4, 1); ctx.fillRect(cx + 2, arrowY,     1, 3); break;
-      }
+      ctx.fillRect(bx + 5 * ART, by + 6 * ART, 2 * ART, ART);
 
       ctx.restore();
     }
@@ -672,40 +914,28 @@ import SectionTitle from './SectionTitle.astro';
     // ─── MINI-MAP ─────────────────────────────────────────────────────────────
     function drawMiniMap(): void {
       if (!ctx) return;
-      // Background
-      ctx.fillStyle = 'rgba(4,4,16,0.82)';
+      ctx.fillStyle = 'rgba(4,4,16,0.85)';
       ctx.fillRect(MX - 2, MY - 2, MW + 4, MH + 4);
       ctx.strokeStyle = 'rgba(0,245,255,0.25)'; ctx.lineWidth = 1;
       ctx.strokeRect(MX - 2, MY - 2, MW + 4, MH + 4);
-
-      // Tiles
       for (let r = 0; r < WORLD_ROWS; r++) {
         for (let c = 0; c < WORLD_COLS; c++) {
           ctx.fillStyle = MINI_COLORS[MAP[r][c]] ?? '#111';
           ctx.fillRect(MX + c * MT, MY + r * MT, MT, MT);
         }
       }
-
-      // Collected items (bright dots)
+      // Uncollected item dots
       collected.forEach((got, i) => {
         if (got) return;
         const it = ITEMS[i];
         ctx.fillStyle = it.color;
         ctx.fillRect(MX + it.col * MT, MY + it.row * MT, MT, MT);
       });
-
-      // Viewport rectangle
+      // Viewport
       ctx.strokeStyle = 'rgba(0,245,255,0.50)'; ctx.lineWidth = 1;
-      ctx.strokeRect(
-        MX + (camX / TILE) * MT,
-        MY + (camY / TILE) * MT,
-        (VW / TILE) * MT,
-        (VH / TILE) * MT
-      );
-
+      ctx.strokeRect(MX + (camX / TILE) * MT, MY + (camY / TILE) * MT, (VW / TILE) * MT, (VH / TILE) * MT);
       // Player dot
-      const ts = performance.now();
-      const pAlpha = 0.6 + Math.sin(ts / 350) * 0.4;
+      const pAlpha = 0.55 + Math.sin(performance.now() / 350) * 0.45;
       ctx.fillStyle = `rgba(0,245,255,${pAlpha})`;
       ctx.fillRect(MX + playerCol * MT, MY + playerRow * MT, MT + 1, MT + 1);
     }
@@ -713,45 +943,40 @@ import SectionTitle from './SectionTitle.astro';
     // ─── WORLD RENDERING ──────────────────────────────────────────────────────
     function drawWorld(ts: number): void {
       if (!ctx) return;
-      // Clear
       ctx.fillStyle = '#080818'; ctx.fillRect(0, 0, VW, VH);
-
-      // Visible tile range
       const c0 = Math.max(0, Math.floor(camX / TILE));
       const c1 = Math.min(WORLD_COLS - 1, Math.ceil((camX + VW) / TILE));
       const r0 = Math.max(0, Math.floor(camY / TILE));
       const r1 = Math.min(WORLD_ROWS - 1, Math.ceil((camY + VH) / TILE));
-
       for (let r = r0; r <= r1; r++) {
         for (let c = c0; c <= c1; c++) {
           const tx = Math.round(c * TILE - camX);
           const ty = Math.round(r * TILE - camY);
-          const tile = MAP[r][c];
-          switch (tile) {
-            case TG: drawGrass(tx, ty, c, r);          break;
-            case TW: drawTree(tx, ty, c, r);           break;
-            case TP: drawPath(tx, ty, c, r);           break;
-            case TQ: drawWater(tx, ty, c, ts);         break;
-            case TF: drawFlower(tx, ty, c, r, ts);     break;
-            case TC: drawCave(tx, ty, c, r, ts);       break;
-            case TS: drawStone(tx, ty, c, r);          break;
-            case TK: drawCabin(tx, ty, c, r);          break;
-            case TM: drawMetal(tx, ty, c, r);          break;
+          switch (MAP[r][c]) {
+            case TG: drawGrass(tx, ty, c, r, ts);    break;
+            case TW: drawTree(tx, ty, c, r, ts);     break;
+            case TP: drawPath(tx, ty, c, r);         break;
+            case TQ: drawWater(tx, ty, c, ts);       break;
+            case TF: drawFlower(tx, ty, c, r, ts);   break;
+            case TC: drawCave(tx, ty, c, r, ts);     break;
+            case TS: drawStone(tx, ty, c, r);        break;
+            case TK: drawCabin(tx, ty, c, r);        break;
+            case TM: drawMetal(tx, ty, c, r);        break;
           }
         }
       }
     }
 
-    // ─── ZONE LABEL OVERLAYS (drawn on canvas) ────────────────────────────────
+    // ─── ZONE LABELS ──────────────────────────────────────────────────────────
     function drawZoneLabels(): void {
       if (!ctx) return;
-      const labels: Array<{ wc: number; wr: number; text: string; color: string }> = [
-        { wc: 3,  wr: 1,  text: 'SKILL\nGARDEN',    color: '#39ff14' },
-        { wc: 10, wr: 2,  text: 'CODE\nVALLEY\nHUB', color: '#00f5ff' },
-        { wc: 18, wr: 1,  text: 'GITHUB\nCAVE',      color: '#ffd700' },
-        { wc: 3,  wr: 12, text: 'EXPERIENCE\nTRAIL',  color: '#ffd700' },
-        { wc: 10, wr: 12, text: 'CONTACT\nCABIN',     color: '#ff6b35' },
-        { wc: 18, wr: 12, text: 'PROJECT\nWORKSHOP', color: '#bf5fff' },
+      const labels = [
+        { wc: 3,  wr: 1,  text: 'SKILL\nGARDEN',     color: '#39ff14' },
+        { wc: 10, wr: 2,  text: 'CODE\nVALLEY\nHUB',  color: '#00f5ff' },
+        { wc: 18, wr: 1,  text: 'GITHUB\nCAVE',       color: '#ffd700' },
+        { wc: 3,  wr: 12, text: 'EXPERIENCE\nTRAIL',   color: '#ffd700' },
+        { wc: 10, wr: 12, text: 'CONTACT\nCABIN',      color: '#ff6b35' },
+        { wc: 18, wr: 12, text: 'PROJECT\nWORKSHOP',  color: '#bf5fff' },
       ];
       ctx.save();
       ctx.textAlign = 'center'; ctx.textBaseline = 'top';
@@ -760,7 +985,7 @@ import SectionTitle from './SectionTitle.astro';
         const sx = lbl.wc * TILE + TILE / 2 - camX;
         let sy = lbl.wr * TILE + 4 - camY;
         if (sx < -20 || sx > VW + 20 || sy < -40 || sy > VH + 20) continue;
-        ctx.globalAlpha = 0.55;
+        ctx.globalAlpha = 0.52;
         ctx.fillStyle = lbl.color;
         for (const line of lbl.text.split('\n')) {
           ctx.fillText(line, sx, sy);
@@ -773,24 +998,31 @@ import SectionTitle from './SectionTitle.astro';
 
     // ─── GAME LOOP ────────────────────────────────────────────────────────────
     function loop(ts: number): void {
+      const dt = lastTs > 0 ? Math.min((ts - lastTs) / 1000, 0.1) : 0.016;
+      lastTs = ts;
+
       if (state === 'playing' || state === 'dialogue') {
-        // Smooth camera lerp
         const targetX = clampCam(playerCol * TILE + TILE / 2 - VW / 2, false);
         const targetY = clampCam(playerRow * TILE + TILE / 2 - VH / 2, true);
         camX += (targetX - camX) * 0.14;
         camY += (targetY - camY) * 0.14;
 
+        updateParticles(dt);
         drawWorld(ts);
         drawZoneLabels();
-        ITEMS.forEach((item, i) => drawItem(item, i, ts));
+        drawAmbient();
+        ITEMS.forEach((item, i) => drawOreNode(item, i, ts));
+        drawParticles();
         drawPlayer(ts);
+        drawMinePrompt(ts);
         drawMiniMap();
 
-        // Banner: hide once wall-clock time has passed
         if (bannerUntil > 0 && ts > bannerUntil) {
           bannerUntil = 0;
           if (bannerEl) bannerEl.style.display = 'none';
         }
+        // End mining anim
+        if (miningAnim && ts - miningAnimStart > 300) miningAnim = false;
       }
       rafId = requestAnimationFrame(loop);
     }
@@ -803,9 +1035,12 @@ import SectionTitle from './SectionTitle.astro';
     function startGame(): void {
       playerCol = 11; playerRow = 10; facing = 'down'; walkCount = 0;
       collected = new Array<boolean>(ITEMS.length).fill(false);
+      mineHits  = new Array<number>(ITEMS.length).fill(0);
       xp = 0; discoveredZones.clear(); currentZoneId = ''; bannerUntil = 0;
+      miningItemIdx = -1; miningAnim = false; hitFlashIdx = -1; particles = [];
       camX = clampCam(playerCol * TILE + TILE / 2 - VW / 2, false);
       camY = clampCam(playerRow * TILE + TILE / 2 - VH / 2, true);
+      lastTs = 0;
       state = 'playing';
 
       if (startEl)  startEl.style.display  = 'none';
@@ -815,6 +1050,7 @@ import SectionTitle from './SectionTitle.astro';
       if (hudEl)    hudEl.style.display    = 'block';
 
       updateHUD();
+      if (soundEnabled) startMusic();
       ensureLoop();
       canvas?.focus();
     }
@@ -825,14 +1061,47 @@ import SectionTitle from './SectionTitle.astro';
       const nr = playerRow + dr;
       if (!tilePassable(nc, nr)) { playBump(); return; }
       playerCol = nc; playerRow = nr;
-      if (dc === -1) facing = 'left';
-      else if (dc === 1) facing = 'right';
+      if      (dc === -1) facing = 'left';
+      else if (dc ===  1) facing = 'right';
       else if (dr === -1) facing = 'up';
-      else facing = 'down';
+      else                facing = 'down';
       walkCount++;
       playMove();
       checkZoneDiscovery();
-      checkCollect();
+      // Update which item (if any) we're standing on
+      miningItemIdx = ITEMS.findIndex((item, i) =>
+        !collected[i] && item.col === playerCol && item.row === playerRow
+      );
+    }
+
+    function doMine(): void {
+      if (state !== 'playing' || miningItemIdx < 0) return;
+      const idx  = miningItemIdx;
+      const item = ITEMS[idx];
+
+      // Swing animation
+      miningAnim      = true;
+      miningAnimStart = performance.now();
+      miningAnimDir   = facing;
+
+      mineHits[idx]++;
+      spawnMineParticles(item);
+      playHit();
+
+      // Flash effect
+      hitFlashIdx   = idx;
+      hitFlashStart = performance.now();
+
+      if (mineHits[idx] >= MINE_HITS) {
+        // Collected!
+        collected[idx] = true;
+        miningItemIdx  = -1;
+        xp += item.xp;
+        updateHUD();
+        spawnCollectParticles(item);
+        playCollect();
+        showDialogue(idx);
+      }
     }
 
     function checkZoneDiscovery(): void {
@@ -853,19 +1122,7 @@ import SectionTitle from './SectionTitle.astro';
       bannerName.textContent = zone.name.toUpperCase();
       bannerName.style.color = zone.color;
       bannerEl.style.display = 'flex';
-      bannerUntil = performance.now() + 3000; // show for 3 s
-    }
-
-    function checkCollect(): void {
-      ITEMS.forEach((item, i) => {
-        if (!collected[i] && item.col === playerCol && item.row === playerRow) {
-          collected[i] = true;
-          xp += item.xp;
-          updateHUD();
-          playCollect();
-          showDialogue(i);
-        }
-      });
+      bannerUntil = performance.now() + 3000;
     }
 
     function updateHUD(): void {
@@ -895,9 +1152,9 @@ import SectionTitle from './SectionTitle.astro';
 
     function showWin(): void {
       state = 'won';
-      if (winXP)  winXP.textContent  = `TOTAL XP: ${xp}`;
-      if (winEl)  winEl.style.display = 'flex';
-      if (hudEl)  hudEl.style.display = 'none';
+      if (winXP)  winXP.textContent   = `TOTAL XP: ${xp}`;
+      if (winEl)  winEl.style.display  = 'flex';
+      if (hudEl)  hudEl.style.display  = 'none';
       if (bannerEl) bannerEl.style.display = 'none';
       playWin();
       restartBtn?.focus();
@@ -924,10 +1181,12 @@ import SectionTitle from './SectionTitle.astro';
         case 'ArrowDown':  case 's': case 'S': tryMove(0,  1);  break;
         case 'ArrowLeft':  case 'a': case 'A': tryMove(-1, 0);  break;
         case 'ArrowRight': case 'd': case 'D': tryMove(1,  0);  break;
+        case ' ':          case 'z': case 'Z': e.preventDefault(); doMine(); break;
       }
     });
 
-    document.querySelectorAll<HTMLButtonElement>('.cq-dpad').forEach((btn) => {
+    // D-pad
+    document.querySelectorAll<HTMLButtonElement>('.cq-dpad[data-dir]').forEach((btn) => {
       const dir = btn.dataset.dir;
       const move = (): void => {
         switch (dir) {
@@ -941,20 +1200,29 @@ import SectionTitle from './SectionTitle.astro';
       btn.addEventListener('touchstart', (e) => { e.preventDefault(); move(); }, { passive: false });
     });
 
+    // Mine action button
+    actionBtn?.addEventListener('click', doMine);
+    actionBtn?.addEventListener('touchstart', (e) => { e.preventDefault(); doMine(); }, { passive: false });
+
     startBtn?.addEventListener('click',  startGame);
     dlgOk?.addEventListener('click',     closeDialogue);
     restartBtn?.addEventListener('click', startGame);
 
     soundBtn?.addEventListener('click', () => {
       soundEnabled = !soundEnabled;
-      if (soundBtn) soundBtn.textContent = soundEnabled ? '🔊 SOUND ON' : '🔇 SOUND OFF';
-      if (soundEnabled && audioCtx?.state === 'suspended') audioCtx.resume().catch(() => {});
+      if (soundBtn) soundBtn.textContent = soundEnabled ? '🔊 SFX' : '🔇 SFX';
+      if (soundEnabled) {
+        if (audioCtx?.state === 'suspended') audioCtx.resume().catch(() => {});
+        if (state === 'playing') startMusic();
+      } else {
+        stopMusic();
+      }
     });
 
-    // ─── INITIAL STATIC PREVIEW ───────────────────────────────────────────────
-    // Draw the world once on the start screen so it's visible behind the overlay
+    // ─── INITIAL PREVIEW ──────────────────────────────────────────────────────
     drawWorld(0);
     drawZoneLabels();
+    ITEMS.forEach((item, i) => drawOreNode(item, i, 0));
     drawMiniMap();
     ensureLoop();
   }
