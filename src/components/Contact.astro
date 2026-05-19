@@ -1,5 +1,4 @@
 ---
-import { siteConfig } from '@/config/site';
 import SectionTitle from './SectionTitle.astro';
 ---
 
@@ -37,9 +36,10 @@ import SectionTitle from './SectionTitle.astro';
       <div class="space-y-2">
         <p class="pixel-label-xs text-slate-500">CHOOSE YOUR ACTION</p>
 
-        <a class="link-pill w-full justify-start" href={`mailto:${siteConfig.email}`}>
+        {/* href and text are set by JS — keeps the email address out of static HTML. */}
+        <a id="email-link" class="link-pill w-full justify-start" href="#" aria-label="Send email">
           <span aria-hidden="true">✉️</span>
-          <span>Send Email: {siteConfig.email}</span>
+          <span id="email-display">Send Email</span>
         </a>
 
         {/* Links use href="#" as safe placeholders; real URLs are set by JS below (light obfuscation). */}
@@ -70,6 +70,8 @@ import SectionTitle from './SectionTitle.astro';
 
         <form id="contact-form" class="space-y-3">
           <input type="hidden" name="_captcha" value="false" />
+          {/* Honeypot: bots fill this in; humans never see it. */}
+          <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
 
           <div>
             <label class="mb-1 block text-xs font-medium text-slate-400" for="name">Name</label>
@@ -128,6 +130,14 @@ import SectionTitle from './SectionTitle.astro';
 </section>
 
 <script>
+  // Email obfuscation — assembled at runtime to keep the address out of static HTML.
+  const emailParts = ['ryan', '.chetty16', '@', 'gmail', '.com'];
+  const emailAddr = emailParts.join('');
+  const emailLinkEl = document.getElementById('email-link') as HTMLAnchorElement | null;
+  const emailDisplayEl = document.getElementById('email-display');
+  if (emailLinkEl) emailLinkEl.href = 'mailto:' + emailAddr;
+  if (emailDisplayEl) emailDisplayEl.textContent = 'Send Email: ' + emailAddr;
+
   // Light obfuscation only — prevents full URLs from appearing in static HTML.
   const profileLinks: Record<string, string[]> = {
     'github-link': ['https://', 'git', 'hub.com/', 'RazorRyan'],
@@ -146,6 +156,10 @@ import SectionTitle from './SectionTitle.astro';
   const statusEl = document.getElementById('form-status') as HTMLElement | null;
   const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
 
+  // Rate-limit: one submission per 60 seconds.
+  const SUBMIT_COOLDOWN_MS = 60_000;
+  let lastSubmitTime = 0;
+
   function showStatus(message: string, success: boolean) {
     if (!statusEl) return;
     statusEl.textContent = message;
@@ -161,6 +175,24 @@ import SectionTitle from './SectionTitle.astro';
     e.preventDefault();
     if (!form || !submitBtn) return;
 
+    // Client-side rate limit check.
+    const now = Date.now();
+    if (now - lastSubmitTime < SUBMIT_COOLDOWN_MS) {
+      const remaining = Math.ceil((SUBMIT_COOLDOWN_MS - (now - lastSubmitTime)) / 1000);
+      showStatus(`⏳ Please wait ${remaining}s before sending another message.`, false);
+      return;
+    }
+
+    // Honeypot check — bots auto-fill hidden fields; humans never do.
+    // FormSubmit also rejects _honey-filled submissions server-side.
+    const honeypot = form.querySelector<HTMLInputElement>('input[name="_honey"]');
+    if (honeypot?.value) {
+      // Silently appear to succeed without actually submitting.
+      showStatus('✅ Quest submitted! I’ll respond soon.', true);
+      form.reset();
+      return;
+    }
+
     submitBtn.disabled = true;
     submitBtn.textContent = '► SENDING…';
     if (statusEl) statusEl.className = 'hidden';
@@ -173,6 +205,7 @@ import SectionTitle from './SectionTitle.astro';
       });
       const data = await res.json();
       if (data.success === 'true') {
+        lastSubmitTime = Date.now();
         showStatus('✅ Quest submitted! I’ll respond soon.', true);
         form.reset();
       } else {
