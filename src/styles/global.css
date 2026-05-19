@@ -31,3 +31,26 @@ main {
 .gradient-text {
   @apply bg-gradient-to-r from-brand-600 to-cyan-500 bg-clip-text text-transparent;
 }
+
+.quest-chip {
+  @apply inline-flex items-center gap-2 rounded-xl border border-slate-300/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 transition duration-300 hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-600 hover:shadow-glow dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:border-brand-400 dark:hover:text-brand-300;
+}
+
+.game-panel {
+  transform-style: preserve-3d;
+  transition: transform 180ms ease;
+}
+
+.glow-orb {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
