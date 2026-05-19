@@ -183,7 +183,8 @@ import SectionTitle from './SectionTitle.astro';
       return;
     }
 
-    // Honeypot check — bots fill hidden fields; humans never do.
+    // Honeypot check — bots auto-fill hidden fields; humans never do.
+    // FormSubmit also rejects _honey-filled submissions server-side.
     const honeypot = form.querySelector<HTMLInputElement>('input[name="_honey"]');
     if (honeypot?.value) {
       // Silently appear to succeed without actually submitting.
