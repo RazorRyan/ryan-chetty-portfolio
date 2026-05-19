@@ -58,20 +58,24 @@ import SectionTitle from './SectionTitle.astro';
         <button id="cq-start-btn" class="btn-arcade btn-arcade-pixel">▶ START ADVENTURE</button>
       </div>
 
-      <!-- Dialogue overlay -->
+      <!-- Skill mined popup (auto-fades, non-blocking) -->
       <div
-        id="cq-dialogue"
-        class="dialog-box absolute inset-x-3 bottom-3"
-        style="display: none;"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="cq-dlg-title"
+        id="cq-popup"
+        class="pointer-events-none absolute inset-x-0 flex justify-center"
+        style="top: 70px; display: none;"
+        aria-live="polite"
+        aria-atomic="true"
       >
-        <p class="pixel-label-sm mb-1.5 text-neon-cyan" id="cq-dlg-title">★ ORE MINED!</p>
-        <p class="mb-3 text-xs leading-relaxed text-slate-300" id="cq-dlg-msg"></p>
-        <button id="cq-dlg-ok" class="btn-arcade btn-arcade-pixel" style="padding: 0.3rem 0.9rem; font-size: 0.4rem;">
-          OK ▶
-        </button>
+        <div
+          id="cq-popup-inner"
+          class="rounded-lg border-2 bg-arcade-black/95 px-5 py-3 text-center"
+          style="min-width: 180px; max-width: 260px;"
+        >
+          <p class="mb-1 text-3xl" id="cq-popup-symbol">⛏</p>
+          <p class="pixel-label-sm" id="cq-popup-label">REACT</p>
+          <p class="pixel-label-xs mt-0.5 text-slate-400" id="cq-popup-sub">★ SKILL MINED</p>
+          <p class="mt-1.5 text-xs leading-snug text-slate-300" id="cq-popup-msg"></p>
+        </div>
       </div>
 
       <!-- Zone discovery banner (auto-fades) -->
@@ -183,11 +187,15 @@ import SectionTitle from './SectionTitle.astro';
   .cq-mine-btn:active {
     background: rgba(255, 215, 0, 0.22);
   }
-  /* Override .dialog-box position:relative (global.css) so the overlay
-     stays absolutely positioned inside the canvas wrapper and never
-     pushes mobile controls down */
-  #cq-dialogue {
-    position: absolute;
+  /* Skill mined popup animation */
+  @keyframes cq-popup-anim {
+    0%   { opacity: 0; transform: translateY(10px) scale(0.88); }
+    14%  { opacity: 1; transform: translateY(0)    scale(1);    }
+    76%  { opacity: 1; transform: translateY(0)    scale(1);    }
+    100% { opacity: 0; transform: translateY(-6px) scale(0.95); }
+  }
+  #cq-popup.cq-popup-visible {
+    animation: cq-popup-anim 2.8s ease forwards;
   }
   /* Prevent the canvas wrapper from ever growing taller than the canvas */
   #cq-wrapper {
@@ -310,10 +318,12 @@ import SectionTitle from './SectionTitle.astro';
   const hudItems   = document.getElementById('cq-items');
   const startEl    = document.getElementById('cq-start');
   const startBtn   = document.getElementById('cq-start-btn');
-  const dlgEl      = document.getElementById('cq-dialogue');
-  const dlgTitle   = document.getElementById('cq-dlg-title');
-  const dlgMsg     = document.getElementById('cq-dlg-msg');
-  const dlgOk      = document.getElementById('cq-dlg-ok');
+  const popupEl       = document.getElementById('cq-popup');
+  const popupInnerEl  = document.getElementById('cq-popup-inner');
+  const popupSymbolEl = document.getElementById('cq-popup-symbol');
+  const popupLabelEl  = document.getElementById('cq-popup-label');
+  const popupSubEl    = document.getElementById('cq-popup-sub');
+  const popupMsgEl    = document.getElementById('cq-popup-msg');
   const winEl      = document.getElementById('cq-win');
   const winXP      = document.getElementById('cq-win-xp');
   const restartBtn = document.getElementById('cq-restart-btn');
@@ -335,7 +345,7 @@ import SectionTitle from './SectionTitle.astro';
   function initGame(): void {
 
     // ─── STATE ────────────────────────────────────────────────────────────────
-    type GameState = 'start' | 'playing' | 'dialogue' | 'won';
+    type GameState = 'start' | 'playing' | 'won';
     let state: GameState = 'start';
     let playerCol  = 11;
     let playerRow  = 10;
@@ -349,6 +359,7 @@ import SectionTitle from './SectionTitle.astro';
     let discoveredZones = new Set<string>();
     let currentZoneId   = '';
     let bannerUntil     = 0;
+    let popupTimer: ReturnType<typeof setTimeout> | null = null;
     let soundEnabled    = false;
     let audioCtx: AudioContext | null = null;
     let rafId: number | null = null;
@@ -1112,7 +1123,7 @@ import SectionTitle from './SectionTitle.astro';
       const dt = lastTs > 0 ? Math.min((ts - lastTs) / 1000, 0.1) : 0.016;
       lastTs = ts;
 
-      if (state === 'playing' || state === 'dialogue') {
+      if (state === 'playing') {
         const targetX = clampCam(playerCol * TILE + TILE / 2 - VW / 2, false);
         const targetY = clampCam(playerRow * TILE + TILE / 2 - VH / 2, true);
         camX += (targetX - camX) * 0.14;
@@ -1156,7 +1167,7 @@ import SectionTitle from './SectionTitle.astro';
 
       if (startEl)  startEl.style.display  = 'none';
       if (winEl)    winEl.style.display    = 'none';
-      if (dlgEl)    dlgEl.style.display    = 'none';
+      if (popupEl)  { popupEl.style.display = 'none'; popupEl.classList.remove('cq-popup-visible'); }
       if (bannerEl) bannerEl.style.display = 'none';
       if (hudEl)    hudEl.style.display    = 'block';
 
@@ -1211,7 +1222,7 @@ import SectionTitle from './SectionTitle.astro';
         updateHUD();
         spawnCollectParticles(item);
         playCollect();
-        showDialogue(idx);
+        showPopup(idx);
       }
     }
 
@@ -1242,23 +1253,35 @@ import SectionTitle from './SectionTitle.astro';
       if (hudItems) hudItems.textContent = `${count} / ${ITEMS.length}`;
     }
 
-    function showDialogue(idx: number): void {
-      state = 'dialogue';
-      const item = ITEMS[idx];
-      if (dlgTitle) dlgTitle.textContent = item.title;
-      if (dlgMsg)   dlgMsg.textContent   = item.msg;
-      if (dlgEl)    dlgEl.style.display  = 'block';
-      dlgOk?.focus({ preventScroll: true });
+    function getPopupSymbol(title: string): string {
+      if (title.includes('SKILL')) return '⛏';
+      if (title.includes('ACHIEVEMENT')) return '🏆';
+      if (title.includes('GEM')) return '💎';
+      if (title.includes('PROJECT')) return '⚙️';
+      if (title.includes('QUEST')) return '📬';
+      return '★';
     }
 
-    function closeDialogue(): void {
-      if (dlgEl) dlgEl.style.display = 'none';
-      if (collected.every(Boolean)) {
-        showWin();
-      } else {
-        state = 'playing';
-        canvas?.focus({ preventScroll: true });
+    function showPopup(idx: number): void {
+      const item = ITEMS[idx];
+      if (popupSymbolEl) popupSymbolEl.textContent = getPopupSymbol(item.title);
+      if (popupLabelEl)  popupLabelEl.textContent  = item.label;
+      if (popupLabelEl)  popupLabelEl.style.color  = item.color;
+      if (popupSubEl)    popupSubEl.textContent     = item.title;
+      if (popupMsgEl)    popupMsgEl.textContent     = item.msg;
+      if (popupInnerEl)  popupInnerEl.style.borderColor = item.color + '99';
+      if (popupEl) {
+        popupEl.style.display = 'flex';
+        popupEl.classList.remove('cq-popup-visible');
+        void popupEl.offsetWidth; // force reflow to restart animation
+        popupEl.classList.add('cq-popup-visible');
       }
+      if (popupTimer !== null) clearTimeout(popupTimer);
+      popupTimer = setTimeout(() => {
+        if (popupEl) popupEl.style.display = 'none';
+        popupTimer = null;
+        if (collected.every(Boolean)) showWin();
+      }, 2850);
     }
 
     function showWin(): void {
@@ -1274,10 +1297,6 @@ import SectionTitle from './SectionTitle.astro';
 
     // ─── INPUT ────────────────────────────────────────────────────────────────
     document.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (state === 'dialogue') {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeDialogue(); }
-        return;
-      }
       if (state === 'start') {
         if (e.key === 'Enter' || e.key === ' ') startGame();
         return;
@@ -1317,7 +1336,6 @@ import SectionTitle from './SectionTitle.astro';
     actionBtn?.addEventListener('touchstart', (e) => { e.preventDefault(); doMine(); }, { passive: false });
 
     startBtn?.addEventListener('click',  startGame);
-    dlgOk?.addEventListener('click',     closeDialogue);
     restartBtn?.addEventListener('click', startGame);
 
     soundBtn?.addEventListener('click', () => {
