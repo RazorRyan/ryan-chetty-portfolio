@@ -1,0 +1,629 @@
+---
+import SectionTitle from './SectionTitle.astro';
+---
+
+<section id="mini-game" class="section-card">
+  <SectionTitle
+    title="Mini Game: Code Quest"
+    subtitle="Take a quick side quest through my skills, projects, and achievements."
+    tag="PLAY MY PORTFOLIO"
+    color="cyan"
+  />
+
+  <div class="relative">
+    <!-- Canvas wrapper -->
+    <div id="cq-wrapper" class="relative mx-auto" style="max-width: 480px;">
+      <canvas
+        id="cq-canvas"
+        width="480"
+        height="360"
+        class="block w-full rounded"
+        style="image-rendering: pixelated; image-rendering: crisp-edges; border: 2px solid rgba(0,245,255,0.3); border-radius: 4px;"
+        aria-label="Code Quest: use arrow keys or WASD to move and collect items"
+        tabindex="0"
+      ></canvas>
+
+      <!-- Live HUD (positioned over top of canvas) -->
+      <div
+        id="cq-hud"
+        class="pointer-events-none absolute left-0 top-0 flex w-full items-start justify-between px-2 py-1.5"
+        style="display: none;"
+      >
+        <span class="pixel-label-xs rounded bg-arcade-black/70 px-1.5 py-0.5 text-neon-cyan" id="cq-score">SCORE: 0</span>
+        <span class="pixel-label-xs rounded bg-arcade-black/70 px-1.5 py-0.5 text-neon-yellow" id="cq-items">0 / 8 ITEMS</span>
+      </div>
+
+      <!-- Start screen -->
+      <div
+        id="cq-start"
+        class="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded"
+        style="background: rgba(8,8,40,0.92); border: 1px solid rgba(0,245,255,0.2);"
+      >
+        <p class="pixel-label-md text-neon-cyan">★ CODE QUEST ★</p>
+        <p class="max-w-[260px] text-center text-xs leading-relaxed text-slate-400">
+          Collect all <span class="font-bold text-neon-yellow">8 skill badges</span> scattered across the map.<br /><br />
+          <span class="text-neon-cyan/70">Arrow keys / WASD</span> on desktop<br />
+          <span class="text-neon-cyan/70">D-pad buttons</span> on mobile
+        </p>
+        <button id="cq-start-btn" class="btn-arcade btn-arcade-pixel">▶ START QUEST</button>
+      </div>
+
+      <!-- Dialogue overlay (shown after collecting an item) -->
+      <div
+        id="cq-dialogue"
+        class="dialog-box absolute inset-x-3 bottom-3"
+        style="display: none;"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cq-dlg-title"
+      >
+        <p class="pixel-label-sm mb-2 text-neon-cyan" id="cq-dlg-title">★ ITEM FOUND!</p>
+        <p class="mb-3 text-xs leading-relaxed text-slate-300" id="cq-dlg-msg"></p>
+        <button id="cq-dlg-ok" class="btn-arcade btn-arcade-pixel" style="padding: 0.3rem 0.9rem; font-size: 0.4rem;">
+          OK ▶
+        </button>
+      </div>
+
+      <!-- Win screen -->
+      <div
+        id="cq-win"
+        class="absolute inset-0 flex-col items-center justify-center gap-4 rounded"
+        style="display: none; background: rgba(8,8,40,0.96); border: 2px solid rgba(255,215,0,0.45);"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Quest complete"
+      >
+        <p class="pixel-label-md text-neon-yellow">★ QUEST COMPLETE! ★</p>
+        <p class="pixel-label-sm text-neon-cyan" id="cq-win-score">FINAL SCORE: 0</p>
+        <p class="max-w-[260px] text-center text-xs text-slate-400">
+          All skills, projects &amp; achievements collected.<br />Full Stack Developer status: <span class="font-bold text-neon-green">UNLOCKED</span>
+        </p>
+        <button id="cq-restart-btn" class="btn-arcade btn-arcade-pixel btn-arcade-yellow">▶ PLAY AGAIN</button>
+      </div>
+    </div>
+
+    <!-- Mobile D-pad controls -->
+    <div
+      id="cq-controls"
+      class="mx-auto mt-3 flex flex-col items-center gap-1"
+      style="max-width: 140px;"
+      aria-label="Movement controls"
+    >
+      <button data-dir="up"    class="cq-dpad" aria-label="Move up">▲</button>
+      <div class="flex gap-1">
+        <button data-dir="left"  class="cq-dpad" aria-label="Move left">◄</button>
+        <div class="h-9 w-9"></div>
+        <button data-dir="right" class="cq-dpad" aria-label="Move right">►</button>
+      </div>
+      <button data-dir="down"  class="cq-dpad" aria-label="Move down">▼</button>
+    </div>
+
+    <!-- Sound toggle -->
+    <div class="mt-2 flex items-center justify-center gap-4">
+      <button
+        id="cq-sound"
+        class="pixel-label-xs rounded border border-slate-700 px-2 py-1 text-slate-500 transition hover:border-slate-500 hover:text-slate-300"
+      >
+        🔇 SOUND OFF
+      </button>
+      <span class="pixel-label-xs hidden text-slate-600 sm:inline">
+        ARROW KEYS / WASD TO MOVE
+      </span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cq-dpad {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(0, 245, 255, 0.4);
+    background: rgba(0, 245, 255, 0.07);
+    color: rgba(0, 245, 255, 0.9);
+    border-radius: 4px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: background 120ms, transform 120ms;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+  }
+
+  .cq-dpad:active {
+    background: rgba(0, 245, 255, 0.22);
+    transform: scale(0.9);
+  }
+</style>
+
+<script>
+  // ─── CONSTANTS ────────────────────────────────────────────────────────────────
+  const TILE = 40;
+  const COLS = 12;
+  const ROWS = 9;
+  const CW   = COLS * TILE; // 480
+  const CH   = ROWS * TILE; // 360
+
+  /** Bobbing animation: speed divisor (ms), phase multiplier, pixel amplitude */
+  const BOB_SPEED     = 620;
+  const BOB_PHASE_MUL = 0.85;
+  const BOB_AMPLITUDE = 3;
+
+  /** Size of one "art pixel" in canvas pixels for the player sprite */
+  const ART_PIXEL = 3;
+
+  /** Item label font string */
+  const ITEM_LABEL_FONT = '7px "Press Start 2P", monospace';
+
+  /** Arrow keys that should be captured when the game is in view */
+  const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'] as const;
+
+  const MAP: number[][] = [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1],
+    [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+    [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1],
+    [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+    [1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  ];
+
+  interface CollectibleDef {
+    col: number;
+    row: number;
+    label: string;
+    color: string;
+    shape: 'circle' | 'square' | 'diamond' | 'star' | 'coin' | 'gem' | 'trophy' | 'hex';
+    msg: string;
+    phase: number;
+  }
+
+  const ITEMS: CollectibleDef[] = [
+    { col: 5, row: 2, label: 'JS',   color: '#ffd700', shape: 'square',  msg: 'Skill unlocked: HTML · CSS · JavaScript', phase: 0 },
+    { col: 9, row: 2, label: 'RCT',  color: '#00f5ff', shape: 'circle',  msg: 'Skill unlocked: React Development',        phase: 1 },
+    { col: 3, row: 3, label: '.NET', color: '#bf5fff', shape: 'diamond', msg: 'Skill unlocked: .NET / C# Engineering',    phase: 2 },
+    { col: 9, row: 3, label: 'JAVA', color: '#ff6b35', shape: 'hex',     msg: 'Skill unlocked: Java Development',         phase: 3 },
+    { col: 2, row: 4, label: 'GH',   color: '#ffd700', shape: 'star',    msg: 'Achievement: Open Source Contributor',     phase: 4 },
+    { col: 5, row: 5, label: 'PRJ',  color: '#ff2d78', shape: 'coin',    msg: 'Quest item: Featured Project Shipped',     phase: 5 },
+    { col: 10, row: 5, label: 'GEM', color: '#39ff14', shape: 'gem',     msg: 'New mission available: Contact Ryan',      phase: 6 },
+    { col: 4, row: 7, label: 'WIN',  color: '#ffd700', shape: 'trophy',  msg: 'Achievement unlocked: Full Stack Developer', phase: 7 },
+  ];
+
+  // ─── DOM REFS ─────────────────────────────────────────────────────────────────
+  const canvas    = document.getElementById('cq-canvas') as HTMLCanvasElement | null;
+  const ctx       = canvas?.getContext('2d') ?? null;
+  const hudEl     = document.getElementById('cq-hud');
+  const hudScore  = document.getElementById('cq-score');
+  const hudItems  = document.getElementById('cq-items');
+  const startEl   = document.getElementById('cq-start');
+  const startBtn  = document.getElementById('cq-start-btn');
+  const dlgEl     = document.getElementById('cq-dialogue');
+  const dlgTitle  = document.getElementById('cq-dlg-title');
+  const dlgMsg    = document.getElementById('cq-dlg-msg');
+  const dlgOk     = document.getElementById('cq-dlg-ok');
+  const winEl     = document.getElementById('cq-win');
+  const winScore  = document.getElementById('cq-win-score');
+  const restartBtn = document.getElementById('cq-restart-btn');
+  const soundBtn  = document.getElementById('cq-sound');
+  const sectionEl = document.getElementById('mini-game');
+
+  if (!canvas || !ctx) {
+    // Canvas not available — bail silently
+    const wrapper = document.getElementById('cq-wrapper');
+    if (wrapper) wrapper.style.display = 'none';
+  } else {
+    initGame();
+  }
+
+  function initGame(): void {
+    // ─── STATE ──────────────────────────────────────────────────────────────────
+    type GameState = 'start' | 'playing' | 'dialogue' | 'won';
+    let state: GameState = 'start';
+    let playerCol = 1;
+    let playerRow = 1;
+    let collected: boolean[] = new Array(ITEMS.length).fill(false);
+    let score = 0;
+    let soundEnabled = false;
+    let rafId: number | null = null;
+    let audioCtx: AudioContext | null = null;
+    let isInView = false;
+
+    // ─── VISIBILITY ─────────────────────────────────────────────────────────────
+    if (sectionEl) {
+      const observer = new IntersectionObserver(
+        (entries) => { isInView = entries[0]?.isIntersecting ?? false; },
+        { threshold: 0.1 }
+      );
+      observer.observe(sectionEl);
+    }
+
+    // ─── AUDIO ──────────────────────────────────────────────────────────────────
+    function getAC(): AudioContext {
+      if (!audioCtx) audioCtx = new AudioContext();
+      return audioCtx;
+    }
+
+    function beep(freq: number, dur: number, vol = 0.12, type: OscillatorType = 'square'): void {
+      if (!soundEnabled) return;
+      try {
+        const ac = getAC();
+        const osc = ac.createOscillator();
+        const gain = ac.createGain();
+        osc.connect(gain);
+        gain.connect(ac.destination);
+        osc.frequency.setValueAtTime(freq, ac.currentTime);
+        osc.type = type;
+        gain.gain.setValueAtTime(vol, ac.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + dur);
+        osc.start(ac.currentTime);
+        osc.stop(ac.currentTime + dur);
+      } catch { /* AudioContext may be suspended */ }
+    }
+
+    function playMove(): void { beep(180, 0.03, 0.05); }
+    function playCollect(): void {
+      beep(523, 0.07); setTimeout(() => beep(659, 0.07), 60); setTimeout(() => beep(784, 0.12), 120);
+    }
+    function playWin(): void {
+      [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.2, 0.1), i * 130));
+    }
+    function playBump(): void { beep(120, 0.05, 0.06); }
+
+    // ─── DRAWING ────────────────────────────────────────────────────────────────
+    function drawFloor(): void {
+      if (!ctx) return;
+      ctx.fillStyle = '#0a0a28';
+      ctx.fillRect(0, 0, CW, CH);
+      ctx.strokeStyle = 'rgba(0,245,255,0.055)';
+      ctx.lineWidth = 1;
+      for (let c = 0; c <= COLS; c++) {
+        ctx.beginPath(); ctx.moveTo(c * TILE, 0); ctx.lineTo(c * TILE, CH); ctx.stroke();
+      }
+      for (let r = 0; r <= ROWS; r++) {
+        ctx.beginPath(); ctx.moveTo(0, r * TILE); ctx.lineTo(CW, r * TILE); ctx.stroke();
+      }
+    }
+
+    function drawWall(c: number, r: number): void {
+      if (!ctx) return;
+      const x = c * TILE;
+      const y = r * TILE;
+      ctx.fillStyle = '#1a1a60';
+      ctx.fillRect(x, y, TILE, TILE);
+      // Top + left highlight
+      ctx.fillStyle = 'rgba(0,245,255,0.22)';
+      ctx.fillRect(x, y, TILE, 3);
+      ctx.fillRect(x, y, 3, TILE);
+      // Bottom + right shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.fillRect(x, y + TILE - 3, TILE, 3);
+      ctx.fillRect(x + TILE - 3, y, 3, TILE);
+      // Inner border
+      ctx.strokeStyle = 'rgba(0,245,255,0.12)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x + 0.5, y + 0.5, TILE - 1, TILE - 1);
+    }
+
+    function drawItemShape(item: CollectibleDef, x: number, y: number): void {
+      if (!ctx) return;
+      const R = 13;
+      ctx.fillStyle = item.color + '44';
+      ctx.strokeStyle = item.color;
+      ctx.lineWidth = 2;
+
+      switch (item.shape) {
+        case 'circle':
+          ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+          break;
+
+        case 'square':
+          ctx.fillRect(x - R, y - R, R * 2, R * 2);
+          ctx.strokeRect(x - R, y - R, R * 2, R * 2);
+          break;
+
+        case 'diamond':
+          ctx.beginPath();
+          ctx.moveTo(x, y - R); ctx.lineTo(x + R, y);
+          ctx.lineTo(x, y + R); ctx.lineTo(x - R, y);
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+          break;
+
+        case 'star': {
+          ctx.beginPath();
+          for (let i = 0; i < 10; i++) {
+            const angle = (i * Math.PI / 5) - Math.PI / 2;
+            const r = i % 2 === 0 ? R : R * 0.42;
+            const sx = x + r * Math.cos(angle);
+            const sy = y + r * Math.sin(angle);
+            i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy);
+          }
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+          break;
+        }
+
+        case 'coin':
+          ctx.beginPath(); ctx.ellipse(x, y, R * 0.65, R, 0, 0, Math.PI * 2);
+          ctx.fill(); ctx.stroke();
+          break;
+
+        case 'gem': {
+          ctx.beginPath();
+          ctx.moveTo(x - R, y - R * 0.25);
+          ctx.lineTo(x - R * 0.35, y - R);
+          ctx.lineTo(x + R * 0.35, y - R);
+          ctx.lineTo(x + R, y - R * 0.25);
+          ctx.lineTo(x, y + R);
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+          break;
+        }
+
+        case 'hex': {
+          ctx.beginPath();
+          for (let i = 0; i < 6; i++) {
+            const angle = (i * Math.PI / 3) - Math.PI / 6;
+            const hx = x + R * Math.cos(angle);
+            const hy = y + R * Math.sin(angle);
+            i === 0 ? ctx.moveTo(hx, hy) : ctx.lineTo(hx, hy);
+          }
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+          break;
+        }
+
+        case 'trophy': {
+          // Cup
+          ctx.beginPath();
+          ctx.moveTo(x - R, y - R);
+          ctx.lineTo(x - R * 0.65, y);
+          ctx.lineTo(x - R * 0.2, y + R * 0.15);
+          ctx.lineTo(x - R * 0.15, y + R * 0.5);
+          ctx.lineTo(x + R * 0.15, y + R * 0.5);
+          ctx.lineTo(x + R * 0.2, y + R * 0.15);
+          ctx.lineTo(x + R * 0.65, y);
+          ctx.lineTo(x + R, y - R);
+          ctx.closePath(); ctx.fill(); ctx.stroke();
+          // Base
+          ctx.fillRect(x - R * 0.55, y + R * 0.5, R * 1.1, R * 0.38);
+          ctx.strokeRect(x - R * 0.55, y + R * 0.5, R * 1.1, R * 0.38);
+          // Handles
+          ctx.beginPath(); ctx.arc(x - R, y - R * 0.45, R * 0.28, Math.PI * 0.5, Math.PI * 1.5); ctx.stroke();
+          ctx.beginPath(); ctx.arc(x + R, y - R * 0.45, R * 0.28, -Math.PI * 0.5, Math.PI * 0.5); ctx.stroke();
+          break;
+        }
+      }
+    }
+
+    function drawItem(item: CollectibleDef, ts: number): void {
+      if (!ctx) return;
+      const bob = Math.sin(ts / BOB_SPEED + item.phase * BOB_PHASE_MUL) * BOB_AMPLITUDE;
+      const x = item.col * TILE + TILE / 2;
+      const y = item.row * TILE + TILE / 2 + bob;
+
+      ctx.save();
+      ctx.shadowColor = item.color;
+      ctx.shadowBlur = 14;
+      drawItemShape(item, x, y);
+      ctx.restore();
+
+      // Label below item
+      ctx.fillStyle = item.color;
+      ctx.font = ITEM_LABEL_FONT;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(item.label, item.col * TILE + TILE / 2, item.row * TILE + TILE - 2);
+    }
+
+    function drawPlayer(col: number, row: number): void {
+      if (!ctx) return;
+      const cx = col * TILE + TILE / 2;
+      const cy = row * TILE + TILE / 2;
+      const ART_PIXEL_SIZE = ART_PIXEL;
+      const bx = cx - 6 * ART_PIXEL_SIZE; // center a 12-pixel-wide sprite
+      const by = cy - 6 * ART_PIXEL_SIZE;
+
+      ctx.save();
+      ctx.shadowColor = '#00f5ff';
+      ctx.shadowBlur = 7;
+
+      // Shoes
+      ctx.fillStyle = '#111';
+      ctx.fillRect(bx + 2 * ART_PIXEL_SIZE, by + 11 * ART_PIXEL_SIZE, 3 * ART_PIXEL_SIZE, ART_PIXEL_SIZE);
+      ctx.fillRect(bx + 7 * ART_PIXEL_SIZE, by + 11 * ART_PIXEL_SIZE, 3 * ART_PIXEL_SIZE, ART_PIXEL_SIZE);
+
+      // Pants
+      ctx.fillStyle = '#1a1a5e';
+      ctx.fillRect(bx + 3 * ART_PIXEL_SIZE, by + 8 * ART_PIXEL_SIZE, 2 * ART_PIXEL_SIZE, 3 * ART_PIXEL_SIZE);
+      ctx.fillRect(bx + 7 * ART_PIXEL_SIZE, by + 8 * ART_PIXEL_SIZE, 2 * ART_PIXEL_SIZE, 3 * ART_PIXEL_SIZE);
+
+      // Shirt
+      ctx.fillStyle = '#00b4d8';
+      ctx.fillRect(bx + 3 * ART_PIXEL_SIZE, by + 4 * ART_PIXEL_SIZE, 6 * ART_PIXEL_SIZE, 4 * ART_PIXEL_SIZE);
+
+      // Arms
+      ctx.fillStyle = '#f0c090';
+      ctx.fillRect(bx + ART_PIXEL_SIZE,     by + 4 * ART_PIXEL_SIZE, 2 * ART_PIXEL_SIZE, 4 * ART_PIXEL_SIZE);
+      ctx.fillRect(bx + 9 * ART_PIXEL_SIZE, by + 4 * ART_PIXEL_SIZE, 2 * ART_PIXEL_SIZE, 4 * ART_PIXEL_SIZE);
+
+      // Head
+      ctx.fillStyle = '#f0c090';
+      ctx.fillRect(bx + 4 * ART_PIXEL_SIZE, by + 0 * ART_PIXEL_SIZE, 4 * ART_PIXEL_SIZE, 4 * ART_PIXEL_SIZE);
+
+      // Hair
+      ctx.fillStyle = '#3d2b1f';
+      ctx.fillRect(bx + 4 * ART_PIXEL_SIZE, by + 0 * ART_PIXEL_SIZE, 4 * ART_PIXEL_SIZE, ART_PIXEL_SIZE);
+      ctx.fillRect(bx + 4 * ART_PIXEL_SIZE, by + ART_PIXEL_SIZE,     ART_PIXEL_SIZE,     ART_PIXEL_SIZE);
+      ctx.fillRect(bx + 7 * ART_PIXEL_SIZE, by + ART_PIXEL_SIZE,     ART_PIXEL_SIZE,     ART_PIXEL_SIZE);
+
+      // Eyes
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(bx + 5 * ART_PIXEL_SIZE, by + 1 * ART_PIXEL_SIZE, ART_PIXEL_SIZE, ART_PIXEL_SIZE);
+      ctx.fillRect(bx + 7 * ART_PIXEL_SIZE, by + 1 * ART_PIXEL_SIZE, ART_PIXEL_SIZE, ART_PIXEL_SIZE);
+
+      // Neon badge pixel on shirt
+      ctx.fillStyle = '#00f5ff';
+      ctx.fillRect(bx + 5 * ART_PIXEL_SIZE, by + 5 * ART_PIXEL_SIZE, 2 * ART_PIXEL_SIZE, ART_PIXEL_SIZE);
+
+      ctx.restore();
+    }
+
+    function drawScene(ts: number): void {
+      if (!ctx) return;
+      drawFloor();
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          if (MAP[r][c] === 1) drawWall(c, r);
+        }
+      }
+      ITEMS.forEach((item, i) => { if (!collected[i]) drawItem(item, ts); });
+      drawPlayer(playerCol, playerRow);
+    }
+
+    // ─── GAME LOOP ───────────────────────────────────────────────────────────────
+    function loop(ts: number): void {
+      if (state === 'playing') drawScene(ts);
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function ensureLoop(): void {
+      if (rafId === null) rafId = requestAnimationFrame(loop);
+    }
+
+    // ─── GAME ACTIONS ────────────────────────────────────────────────────────────
+    function startGame(): void {
+      playerCol = 1;
+      playerRow = 1;
+      collected = new Array(ITEMS.length).fill(false);
+      score = 0;
+      state = 'playing';
+
+      if (startEl) startEl.style.display = 'none';
+      if (winEl) winEl.style.display = 'none';
+      if (dlgEl) dlgEl.style.display = 'none';
+      if (hudEl) hudEl.style.display = 'flex';
+
+      updateHUD();
+      ensureLoop();
+    }
+
+    function tryMove(dc: number, dr: number): void {
+      if (state !== 'playing') return;
+      const nc = playerCol + dc;
+      const nr = playerRow + dr;
+      if (nc < 0 || nc >= COLS || nr < 0 || nr >= ROWS) return;
+      if (MAP[nr][nc] === 1) { playBump(); return; }
+      playerCol = nc;
+      playerRow = nr;
+      playMove();
+      checkCollect();
+    }
+
+    function checkCollect(): void {
+      ITEMS.forEach((item, i) => {
+        if (!collected[i] && item.col === playerCol && item.row === playerRow) {
+          collected[i] = true;
+          score += 100;
+          updateHUD();
+          playCollect();
+          showDialogue(i);
+        }
+      });
+    }
+
+    function updateHUD(): void {
+      const count = collected.filter(Boolean).length;
+      if (hudScore) hudScore.textContent = `SCORE: ${score}`;
+      if (hudItems) hudItems.textContent = `${count} / ${ITEMS.length} ITEMS`;
+    }
+
+    function showDialogue(idx: number): void {
+      state = 'dialogue';
+      const item = ITEMS[idx];
+      if (dlgTitle) dlgTitle.textContent = '★ ITEM FOUND!';
+      if (dlgMsg) dlgMsg.textContent = item.msg;
+      if (dlgEl) dlgEl.style.display = 'block';
+      dlgOk?.focus();
+    }
+
+    function closeDialogue(): void {
+      if (dlgEl) dlgEl.style.display = 'none';
+      if (collected.every(Boolean)) {
+        showWin();
+      } else {
+        state = 'playing';
+        canvas?.focus();
+      }
+    }
+
+    function showWin(): void {
+      state = 'won';
+      if (winScore) winScore.textContent = `FINAL SCORE: ${score}`;
+      if (winEl) winEl.style.display = 'flex';
+      if (hudEl) hudEl.style.display = 'none';
+      playWin();
+      restartBtn?.focus();
+    }
+
+    // ─── INPUT ───────────────────────────────────────────────────────────────────
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (state === 'dialogue') {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeDialogue(); }
+        return;
+      }
+      if (state === 'start') {
+        if (e.key === 'Enter' || e.key === ' ') startGame();
+        return;
+      }
+      if (state === 'won') {
+        if (e.key === 'Enter' || e.key === ' ') startGame();
+        return;
+      }
+      // Only capture arrow keys when game section is in view to avoid scroll hijack
+      const prevent = isInView && (ARROW_KEYS as readonly string[]).includes(e.key);
+      if (prevent) e.preventDefault();
+
+      switch (e.key) {
+        case 'ArrowUp':    case 'w': case 'W': tryMove(0, -1);  break;
+        case 'ArrowDown':  case 's': case 'S': tryMove(0, 1);   break;
+        case 'ArrowLeft':  case 'a': case 'A': tryMove(-1, 0);  break;
+        case 'ArrowRight': case 'd': case 'D': tryMove(1, 0);   break;
+      }
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('.cq-dpad').forEach((btn) => {
+      const dir = btn.dataset.dir;
+      const move = (): void => {
+        switch (dir) {
+          case 'up':    tryMove(0, -1);  break;
+          case 'down':  tryMove(0, 1);   break;
+          case 'left':  tryMove(-1, 0);  break;
+          case 'right': tryMove(1, 0);   break;
+        }
+      };
+      btn.addEventListener('click', move);
+      btn.addEventListener('touchstart', (e) => { e.preventDefault(); move(); }, { passive: false });
+    });
+
+    startBtn?.addEventListener('click', startGame);
+    dlgOk?.addEventListener('click', closeDialogue);
+    restartBtn?.addEventListener('click', startGame);
+
+    soundBtn?.addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      if (soundBtn) soundBtn.textContent = soundEnabled ? '🔊 SOUND ON' : '🔇 SOUND OFF';
+      // Resume suspended AudioContext on first user interaction
+      if (soundEnabled && audioCtx?.state === 'suspended') {
+        audioCtx.resume().catch(() => { /* ignore */ });
+      }
+    });
+
+    // ─── INITIAL RENDER ──────────────────────────────────────────────────────────
+    // Draw a static preview of the map on start screen
+    drawScene(0);
+
+    // Start the loop so the start-screen glows render
+    ensureLoop();
+  }
+</script>

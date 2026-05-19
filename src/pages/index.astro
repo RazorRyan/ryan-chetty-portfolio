@@ -7,6 +7,7 @@ import Skills from '@/components/Skills.astro';
 import Experience from '@/components/Experience.astro';
 import Projects from '@/components/Projects.astro';
 import Contact from '@/components/Contact.astro';
+import CodeQuest from '@/components/CodeQuest.astro';
 import Footer from '@/components/Footer.astro';
 import { siteConfig } from '@/config/site';
 ---
@@ -36,6 +37,7 @@ import { siteConfig } from '@/config/site';
         { href: '#projects', label: 'Levels' },
         { href: '#experience', label: 'Quests' },
         { href: '#contact', label: 'Contact' },
+        { href: '#mini-game', label: 'Play' },
       ].map(({ href, label }) => (
         <a
           href={href}
@@ -58,6 +60,7 @@ import { siteConfig } from '@/config/site';
       <Projects />
       <Experience />
       <Contact />
+      <CodeQuest />
     </div>
   </main>
 
