@@ -142,6 +142,31 @@ html:not(.dark) .hud-panel {
   text-transform: uppercase;
 }
 
+/* Smaller size variant — used for sub-labels and status text */
+.pixel-label-sm {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
+  line-height: 1.4;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Extra-small variant — used for micro HUD info */
+.pixel-label-xs {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.38rem;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Modifier to give .btn-arcade the Press Start 2P pixel font */
+.btn-arcade-pixel {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+}
+
 /* ═══════════════════════════════════════════════════
    NEON TEXT HELPERS
 ═══════════════════════════════════════════════════ */

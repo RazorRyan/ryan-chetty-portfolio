@@ -33,7 +33,7 @@ const attributes = [
     <!-- Bio / Character description -->
     <div class="space-y-4">
       <div class="dialog-box">
-        <p class="pixel-label mb-3 text-neon-cyan" style="font-size:0.45rem;">
+        <p class="pixel-label-sm mb-3 text-neon-cyan">
           ▶ CHARACTER BIO
         </p>
         <p class="text-sm leading-7 text-slate-300">
@@ -53,7 +53,7 @@ const attributes = [
 
       <!-- Equipment / Attributes -->
       <div class="rounded border border-neon-cyan/15 bg-arcade-black/40 p-4">
-        <p class="pixel-label mb-3 text-neon-yellow" style="font-size:0.45rem;">
+        <p class="pixel-label-sm mb-3 text-neon-yellow">
           ◆ EQUIPMENT LOADOUT
         </p>
         <div class="grid grid-cols-2 gap-2">
@@ -61,7 +61,7 @@ const attributes = [
             <div class="flex items-start gap-2 rounded border border-white/5 bg-white/5 p-2">
               <span class="text-base" aria-hidden="true">{attr.icon}</span>
               <div class="min-w-0">
-                <p class="pixel-label text-slate-500 truncate" style="font-size:0.38rem;">{attr.label}</p>
+                <p class="pixel-label-xs text-slate-500 truncate">{attr.label}</p>
                 <p class="mt-0.5 truncate text-xs font-medium text-slate-200">{attr.value}</p>
               </div>
             </div>
@@ -73,7 +73,7 @@ const attributes = [
     <!-- Stat bars -->
     <div class="space-y-4">
       <div class="rounded border border-neon-cyan/15 bg-arcade-black/40 p-5">
-        <p class="pixel-label mb-4 text-neon-cyan" style="font-size:0.45rem;">
+        <p class="pixel-label-sm mb-4 text-neon-cyan">
           ◆ ATTRIBUTE STATS
         </p>
         <div class="space-y-4">

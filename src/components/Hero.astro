@@ -17,7 +17,7 @@ const XP_INCREMENT = 10;
       <span class="pixel-label inline-flex items-center gap-2 rounded border border-neon-cyan/30 bg-neon-cyan/5 px-2.5 py-1.5 text-neon-cyan" style="font-size:0.5rem;">
         ★ INSERT COIN ★
       </span>
-      <span class="pixel-label text-slate-500" style="font-size:0.45rem;">
+      <span class="pixel-label-sm text-slate-500">
         {siteConfig.location}
       </span>
     </div>
@@ -37,7 +37,7 @@ const XP_INCREMENT = 10;
       <span class="text-lg font-semibold text-slate-300 sm:text-xl">
         {siteConfig.title}
       </span>
-      <span class="pixel-label rounded bg-neon-yellow/10 px-2 py-1 text-neon-yellow" style="font-size:0.45rem;">
+      <span class="pixel-label-sm rounded bg-neon-yellow/10 px-2 py-1 text-neon-yellow">
         LVL {PLAYER_LEVEL}
       </span>
     </div>
@@ -69,7 +69,7 @@ const XP_INCREMENT = 10;
 
     <!-- PRESS START CTA -->
     <div class="pt-2">
-      <a href="#about" class="btn-arcade inline-flex" style="font-family:'Press Start 2P',monospace; font-size:0.6rem;">
+      <a href="#about" class="btn-arcade btn-arcade-pixel inline-flex">
         ▶ PRESS START
         <span class="cursor-blink ml-1" aria-hidden="true">_</span>
       </a>
@@ -89,8 +89,8 @@ const XP_INCREMENT = 10;
 
       <!-- HUD header -->
       <div class="mb-4 flex items-center justify-between">
-        <span class="pixel-label text-neon-cyan" style="font-size:0.45rem;">PLAYER PROFILE</span>
-        <span class="pixel-label text-neon-yellow" style="font-size:0.45rem;">◆ LVL {PLAYER_LEVEL}</span>
+        <span class="pixel-label-sm text-neon-cyan">PLAYER PROFILE</span>
+        <span class="pixel-label-sm text-neon-yellow">◆ LVL {PLAYER_LEVEL}</span>
       </div>
 
       <!-- Avatar -->
@@ -133,8 +133,8 @@ const XP_INCREMENT = 10;
           id="xp-button"
           type="button"
           aria-label={`Gain XP. Current XP is 0 out of ${MAX_XP}.`}
-          class="btn-arcade w-full justify-center"
-          style="font-family:'Press Start 2P',monospace; font-size:0.5rem; padding:0.5rem 0.75rem;"
+          class="btn-arcade btn-arcade-pixel w-full justify-center"
+          style="padding:0.5rem 0.75rem;"
         >
           +{XP_INCREMENT} XP
         </button>

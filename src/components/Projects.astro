@@ -68,15 +68,14 @@ const statusStyles: Record<string, string> = {
               {level.number}
             </span>
             <div>
-              <p class="pixel-label text-slate-500" style="font-size:0.38rem;">{level.genre}</p>
+              <p class="pixel-label-xs text-slate-500">{level.genre}</p>
             </div>
           </div>
           <span
             class:list={[
-              'pixel-label shrink-0 rounded border px-2 py-1',
+              'pixel-label-xs shrink-0 rounded border px-2 py-1',
               statusStyles[level.statusColor] ?? statusStyles.cyan,
             ]}
-            style="font-size:0.38rem;"
           >
             {level.status}
           </span>

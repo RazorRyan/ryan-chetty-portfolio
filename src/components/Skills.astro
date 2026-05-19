@@ -75,6 +75,8 @@ const groupLabelColors = {
   yellow:  'text-neon-yellow',
   green:   'text-neon-green',
 };
+
+const totalSkills = skillGroups.reduce((acc, g) => acc + g.skills.length, 0);
 ---
 
 <section id="skills" class="section-card">
@@ -110,11 +112,10 @@ const groupLabelColors = {
           </div>
           <span
             class:list={[
-              'pixel-label rounded border px-1.5 py-1',
+              'pixel-label-xs rounded border px-1.5 py-1',
               groupLabelColors[group.color as keyof typeof groupLabelColors] ?? groupLabelColors.cyan,
               `border-current opacity-60`,
             ]}
-            style="font-size:0.38rem;"
           >
             {group.tag}
           </span>
@@ -142,9 +143,9 @@ const groupLabelColors = {
 
   <!-- Bottom XP summary -->
   <div class="mt-5 flex flex-wrap items-center gap-4 rounded border border-neon-cyan/10 bg-arcade-black/30 px-4 py-3 text-sm text-slate-400">
-    <span class="pixel-label text-neon-cyan" style="font-size:0.45rem;">TOTAL SKILLS UNLOCKED</span>
-    <span class="pixel-label text-neon-yellow" style="font-size:0.45rem;">
-      {skillGroups.reduce((acc, g) => acc + g.skills.length, 0)} / {skillGroups.reduce((acc, g) => acc + g.skills.length, 0)} ★
+    <span class="pixel-label-sm text-neon-cyan">TOTAL SKILLS UNLOCKED</span>
+    <span class="pixel-label-sm text-neon-yellow">
+      {totalSkills} / {totalSkills} ★
     </span>
     <span class="ml-auto text-xs text-slate-500">New unlocks available — keep building.</span>
   </div>
