@@ -14,6 +14,10 @@
   color-scheme: dark;
 }
 
+html:not(.dark) {
+  color-scheme: light;
+}
+
 html,
 body {
   @apply m-0 min-h-full antialiased;
@@ -35,13 +39,97 @@ body {
 
 /* Light mode overrides */
 html:not(.dark) body {
-  background-color: #f0f4ff;
-  color: #1e1e3f;
+  background-color: #e8eef9;
+  color: #0f172a;
   background-image:
-    linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px),
-    radial-gradient(ellipse at 50% 0%, rgba(79, 70, 229, 0.08) 0%, transparent 55%);
+    linear-gradient(rgba(79, 70, 229, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 70, 229, 0.045) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 0%, rgba(79, 70, 229, 0.07) 0%, transparent 55%);
   background-size: 40px 40px, 40px 40px, 100% 60%;
+}
+
+html:not(.dark) .text-slate-100 {
+  color: #0f172a;
+}
+
+html:not(.dark) .text-slate-200 {
+  color: #1e293b;
+}
+
+html:not(.dark) .text-slate-300 {
+  color: #334155;
+}
+
+html:not(.dark) .text-slate-400 {
+  color: #475569;
+}
+
+html:not(.dark) .text-slate-500,
+html:not(.dark) .text-slate-600 {
+  color: #64748b;
+}
+
+html:not(.dark) .text-neon-cyan,
+html:not(.dark) .neon-cyan {
+  color: #4338ca;
+  text-shadow: none;
+}
+
+html:not(.dark) .text-neon-magenta,
+html:not(.dark) .neon-magenta {
+  color: #be185d;
+  text-shadow: none;
+}
+
+html:not(.dark) .text-neon-yellow,
+html:not(.dark) .neon-yellow {
+  color: #b45309;
+  text-shadow: none;
+}
+
+html:not(.dark) .text-neon-green,
+html:not(.dark) .neon-green {
+  color: #15803d;
+  text-shadow: none;
+}
+
+html:not(.dark) .text-neon-cyan\/70 {
+  color: rgba(67, 56, 202, 0.72);
+}
+
+html:not(.dark) .text-neon-cyan\/60 {
+  color: rgba(67, 56, 202, 0.62);
+}
+
+html:not(.dark) .bg-arcade-dark\/80 {
+  background-color: rgba(248, 250, 255, 0.88);
+}
+
+html:not(.dark) .bg-arcade-black\/30 {
+  background-color: rgba(226, 232, 240, 0.5);
+}
+
+html:not(.dark) .bg-arcade-black\/40 {
+  background-color: rgba(226, 232, 240, 0.62);
+}
+
+html:not(.dark) .bg-arcade-black\/50 {
+  background-color: rgba(226, 232, 240, 0.72);
+}
+
+html:not(.dark) .bg-arcade-black\/60 {
+  background-color: rgba(226, 232, 240, 0.82);
+}
+
+html:not(.dark) .bg-arcade-black\/80,
+html:not(.dark) .bg-arcade-black\/90 {
+  background-color: rgba(241, 245, 249, 0.92);
+}
+
+html:not(.dark) #game-panel {
+  background: rgba(248, 250, 255, 0.96) !important;
+  border-color: rgba(79, 70, 229, 0.28) !important;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(79, 70, 229, 0.08);
 }
 
 main {
