@@ -89,7 +89,7 @@ import SectionTitle from './SectionTitle.astro';
           All 5 zones explored and 11 items collected.<br />
           <span class="font-bold text-neon-green">Portfolio Explorer: UNLOCKED</span>
         </p>
-        <a href="#contact" class="btn-arcade btn-arcade-pixel btn-arcade-yellow" style="text-decoration: none;">
+        <a href="#contact" class="btn-arcade btn-arcade-pixel btn-arcade-yellow no-underline">
           ✉ CONTACT RYAN
         </a>
         <button id="cq-restart-btn" class="btn-arcade btn-arcade-pixel" style="font-size: 0.35rem; margin-top: 0.25rem;">
@@ -318,7 +318,7 @@ import SectionTitle from './SectionTitle.astro';
     let xp          = 0;
     let discoveredZones = new Set<string>();
     let currentZoneId   = '';
-    let bannerTimer     = 0;      // frames remaining to show banner
+    let bannerUntil     = 0;      // performance.now() timestamp when banner should hide
     let soundEnabled    = false;
     let audioCtx: AudioContext | null = null;
     let rafId: number | null = null;
@@ -350,7 +350,9 @@ import SectionTitle from './SectionTitle.astro';
 
     // ─── AUDIO ────────────────────────────────────────────────────────────────
     function getAC(): AudioContext {
-      if (!audioCtx) audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      // Support standard AudioContext and the older webkit-prefixed variant
+      const AC = window.AudioContext ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!audioCtx) audioCtx = new AC();
       return audioCtx;
     }
     function beep(freq: number, dur: number, vol = 0.1, type: OscillatorType = 'square'): void {
@@ -374,6 +376,11 @@ import SectionTitle from './SectionTitle.astro';
     function playBump():     void { beep(100, 0.05, 0.05); }
 
     // ─── TILE DRAWING ─────────────────────────────────────────────────────────
+    /**
+     * Deterministic pseudo-random number in [0, 1) based on tile coordinates.
+     * The large primes are chosen to minimise spatial correlation between
+     * adjacent tiles so texture variation looks naturally irregular.
+     */
     function hash(col: number, row: number, s = 1): number {
       return Math.abs((col * 73856093) ^ (row * 19349663) ^ (s * 83492791)) % 1000 / 1000;
     }
@@ -634,7 +641,9 @@ import SectionTitle from './SectionTitle.astro';
       ctx.fillRect(bx + 4 * ART, by + ART,     ART,     ART);
       ctx.fillRect(bx + 7 * ART, by + ART,     ART,     ART);
 
-      // Eyes (direction aware)
+      // Eyes (direction aware).
+      // When facing 'up' the player's back is to the camera — no eyes visible.
+      // Left/right shift the eye pair to hint at the look direction.
       ctx.fillStyle = '#1a1a2e';
       const eyeX = facing === 'left' ? 4 : (facing === 'right' ? 6 : 5);
       if (facing !== 'up') {
@@ -777,10 +786,10 @@ import SectionTitle from './SectionTitle.astro';
         drawPlayer(ts);
         drawMiniMap();
 
-        // Banner countdown
-        if (bannerTimer > 0) {
-          bannerTimer--;
-          if (bannerTimer === 0 && bannerEl) bannerEl.style.display = 'none';
+        // Banner: hide once wall-clock time has passed
+        if (bannerUntil > 0 && ts > bannerUntil) {
+          bannerUntil = 0;
+          if (bannerEl) bannerEl.style.display = 'none';
         }
       }
       rafId = requestAnimationFrame(loop);
@@ -794,7 +803,7 @@ import SectionTitle from './SectionTitle.astro';
     function startGame(): void {
       playerCol = 11; playerRow = 10; facing = 'down'; walkCount = 0;
       collected = new Array<boolean>(ITEMS.length).fill(false);
-      xp = 0; discoveredZones.clear(); currentZoneId = '';
+      xp = 0; discoveredZones.clear(); currentZoneId = ''; bannerUntil = 0;
       camX = clampCam(playerCol * TILE + TILE / 2 - VW / 2, false);
       camY = clampCam(playerRow * TILE + TILE / 2 - VH / 2, true);
       state = 'playing';
@@ -844,7 +853,7 @@ import SectionTitle from './SectionTitle.astro';
       bannerName.textContent = zone.name.toUpperCase();
       bannerName.style.color = zone.color;
       bannerEl.style.display = 'flex';
-      bannerTimer = 180; // ~3 s at 60fps
+      bannerUntil = performance.now() + 3000; // show for 3 s
     }
 
     function checkCollect(): void {
