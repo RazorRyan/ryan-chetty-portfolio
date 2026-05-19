@@ -3,7 +3,8 @@ import { siteConfig, githubProfileImageUrl } from '@/config/site';
 
 const mainTagline =
   'Technical Lead focused on building scalable, high-quality software systems with a strong emphasis on architecture and clean design.';
-const gameLevelLabel = 'Level 99 Builder';
+const BUILDER_LEVEL = 99;
+const gameLevelLabel = `Level ${BUILDER_LEVEL} Builder`;
 const titleSeparator = '•';
 ---
 
@@ -114,7 +115,7 @@ const titleSeparator = '•';
   });
 
   if (!prefersReducedMotion) {
-    let rafHandle = 0;
+    let tiltAnimationId: number | null = null;
     let targetX = 0;
     let targetY = 0;
 
@@ -125,10 +126,10 @@ const titleSeparator = '•';
       targetX = ((event.clientY - rect.top) / rect.height - 0.5) * -MAX_TILT_ANGLE;
       targetY = ((event.clientX - rect.left) / rect.width - 0.5) * MAX_TILT_ANGLE;
 
-      if (rafHandle !== 0) return;
-      rafHandle = window.requestAnimationFrame(() => {
+      if (tiltAnimationId !== null) return;
+      tiltAnimationId = window.requestAnimationFrame(() => {
         target.style.transform = `perspective(${PANEL_PERSPECTIVE}px) rotateX(${targetX.toFixed(ROTATION_PRECISION)}deg) rotateY(${targetY.toFixed(ROTATION_PRECISION)}deg)`;
-        rafHandle = 0;
+        tiltAnimationId = null;
       });
     });
 
