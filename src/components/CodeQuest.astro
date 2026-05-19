@@ -183,6 +183,16 @@ import SectionTitle from './SectionTitle.astro';
   .cq-mine-btn:active {
     background: rgba(255, 215, 0, 0.22);
   }
+  /* Override .dialog-box position:relative (global.css) so the overlay
+     stays absolutely positioned inside the canvas wrapper and never
+     pushes mobile controls down */
+  #cq-dialogue {
+    position: absolute;
+  }
+  /* Prevent the canvas wrapper from ever growing taller than the canvas */
+  #cq-wrapper {
+    overflow: hidden;
+  }
 </style>
 
 <script>
@@ -475,9 +485,30 @@ import SectionTitle from './SectionTitle.astro';
       } catch { /* ignore */ }
     }
     function playMove():    void { beep(220, 0.04, 0.025, 'sine'); }
-    function playHit():     void {
-      beep(180, 0.06, 0.09, 'square');
-      setTimeout(() => beep(130, 0.05, 0.06, 'sawtooth'), 45);
+    function playHit(): void {
+      if (!soundEnabled) return;
+      try {
+        const ac  = getAC();
+        const now = ac.currentTime;
+        // Metallic "ting" — high triangle ping with pitch drop
+        const o1 = ac.createOscillator(); const g1 = ac.createGain();
+        o1.type = 'triangle';
+        o1.frequency.setValueAtTime(900, now);
+        o1.frequency.exponentialRampToValueAtTime(400, now + 0.10);
+        g1.gain.setValueAtTime(0.08, now);
+        g1.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        o1.connect(g1); g1.connect(ac.destination);
+        o1.start(now); o1.stop(now + 0.24);
+        // Low "thud" — sine body impact
+        const o2 = ac.createOscillator(); const g2 = ac.createGain();
+        o2.type = 'sine';
+        o2.frequency.setValueAtTime(170, now);
+        o2.frequency.exponentialRampToValueAtTime(55, now + 0.11);
+        g2.gain.setValueAtTime(0.10, now);
+        g2.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+        o2.connect(g2); g2.connect(ac.destination);
+        o2.start(now); o2.stop(now + 0.16);
+      } catch { /* ignore */ }
     }
     function playCollect(): void {
       [523, 659, 784, 1047].forEach((f, i) =>
@@ -491,7 +522,7 @@ import SectionTitle from './SectionTitle.astro';
       [523, 659, 784, 1047, 1319].forEach((f, i) =>
         setTimeout(() => beep(f, 0.20, 0.10, 'triangle'), i * 120));
     }
-    function playBump(): void { beep(100, 0.06, 0.05, 'sawtooth'); }
+    function playBump(): void { beep(110, 0.09, 0.04, 'sine'); }
 
     // ─── BACKGROUND MUSIC ─────────────────────────────────────────────────────
     // A minor pentatonic: A3 C4 D4 E4 G4 A4 C5 D5
@@ -1076,9 +1107,9 @@ import SectionTitle from './SectionTitle.astro';
       if (hudEl)    hudEl.style.display    = 'block';
 
       updateHUD();
+      canvas?.focus({ preventScroll: true });
       if (soundEnabled) startMusic();
       ensureLoop();
-      canvas?.focus();
     }
 
     function tryMove(dc: number, dr: number): void {
@@ -1163,7 +1194,7 @@ import SectionTitle from './SectionTitle.astro';
       if (dlgTitle) dlgTitle.textContent = item.title;
       if (dlgMsg)   dlgMsg.textContent   = item.msg;
       if (dlgEl)    dlgEl.style.display  = 'block';
-      dlgOk?.focus();
+      dlgOk?.focus({ preventScroll: true });
     }
 
     function closeDialogue(): void {
@@ -1172,7 +1203,7 @@ import SectionTitle from './SectionTitle.astro';
         showWin();
       } else {
         state = 'playing';
-        canvas?.focus();
+        canvas?.focus({ preventScroll: true });
       }
     }
 
@@ -1183,7 +1214,7 @@ import SectionTitle from './SectionTitle.astro';
       if (hudEl)  hudEl.style.display  = 'none';
       if (bannerEl) bannerEl.style.display = 'none';
       playWin();
-      restartBtn?.focus();
+      restartBtn?.focus({ preventScroll: true });
     }
 
     // ─── INPUT ────────────────────────────────────────────────────────────────
