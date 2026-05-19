@@ -41,7 +41,7 @@ import SectionTitle from './SectionTitle.astro';
       >
         <p class="pixel-label-md text-neon-cyan">★ CODE QUEST ★</p>
         <p class="max-w-[260px] text-center text-xs leading-relaxed text-slate-400">
-          Collect all <span class="text-neon-yellow font-bold">8 skill badges</span> scattered across the map.<br /><br />
+          Collect all <span class="font-bold text-neon-yellow">8 skill badges</span> scattered across the map.<br /><br />
           <span class="text-neon-cyan/70">Arrow keys / WASD</span> on desktop<br />
           <span class="text-neon-cyan/70">D-pad buttons</span> on mobile
         </p>
@@ -76,7 +76,7 @@ import SectionTitle from './SectionTitle.astro';
         <p class="pixel-label-md text-neon-yellow">★ QUEST COMPLETE! ★</p>
         <p class="pixel-label-sm text-neon-cyan" id="cq-win-score">FINAL SCORE: 0</p>
         <p class="max-w-[260px] text-center text-xs text-slate-400">
-          All skills, projects &amp; achievements collected.<br />Full Stack Developer status: <span class="text-neon-green font-bold">UNLOCKED</span>
+          All skills, projects &amp; achievements collected.<br />Full Stack Developer status: <span class="font-bold text-neon-green">UNLOCKED</span>
         </p>
         <button id="cq-restart-btn" class="btn-arcade btn-arcade-pixel btn-arcade-yellow">▶ PLAY AGAIN</button>
       </div>
@@ -145,6 +145,20 @@ import SectionTitle from './SectionTitle.astro';
   const ROWS = 9;
   const CW   = COLS * TILE; // 480
   const CH   = ROWS * TILE; // 360
+
+  /** Bobbing animation: speed divisor (ms), phase multiplier, pixel amplitude */
+  const BOB_SPEED     = 620;
+  const BOB_PHASE_MUL = 0.85;
+  const BOB_AMPLITUDE = 3;
+
+  /** Size of one "art pixel" in canvas pixels for the player sprite */
+  const ART_PIXEL = 3;
+
+  /** Item label font string */
+  const ITEM_LABEL_FONT = '7px "Press Start 2P", monospace';
+
+  /** Arrow keys that should be captured when the game is in view */
+  const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'] as const;
 
   const MAP: number[][] = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -384,7 +398,7 @@ import SectionTitle from './SectionTitle.astro';
 
     function drawItem(item: CollectibleDef, ts: number): void {
       if (!ctx) return;
-      const bob = Math.sin(ts / 620 + item.phase * 0.85) * 3;
+      const bob = Math.sin(ts / BOB_SPEED + item.phase * BOB_PHASE_MUL) * BOB_AMPLITUDE;
       const x = item.col * TILE + TILE / 2;
       const y = item.row * TILE + TILE / 2 + bob;
 
@@ -396,7 +410,7 @@ import SectionTitle from './SectionTitle.astro';
 
       // Label below item
       ctx.fillStyle = item.color;
-      ctx.font = '7px "Press Start 2P", monospace';
+      ctx.font = ITEM_LABEL_FONT;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'bottom';
       ctx.fillText(item.label, item.col * TILE + TILE / 2, item.row * TILE + TILE - 2);
@@ -406,9 +420,9 @@ import SectionTitle from './SectionTitle.astro';
       if (!ctx) return;
       const cx = col * TILE + TILE / 2;
       const cy = row * TILE + TILE / 2;
-      const P = 3; // px per "art pixel"
-      const bx = cx - 6 * P; // center a 12-pixel-wide sprite
-      const by = cy - 6 * P;
+      const ART_PIXEL_SIZE = ART_PIXEL;
+      const bx = cx - 6 * ART_PIXEL_SIZE; // center a 12-pixel-wide sprite
+      const by = cy - 6 * ART_PIXEL_SIZE;
 
       ctx.save();
       ctx.shadowColor = '#00f5ff';
@@ -416,41 +430,41 @@ import SectionTitle from './SectionTitle.astro';
 
       // Shoes
       ctx.fillStyle = '#111';
-      ctx.fillRect(bx + 2 * P, by + 11 * P, 3 * P, P);
-      ctx.fillRect(bx + 7 * P, by + 11 * P, 3 * P, P);
+      ctx.fillRect(bx + 2 * ART_PIXEL_SIZE, by + 11 * ART_PIXEL_SIZE, 3 * ART_PIXEL_SIZE, ART_PIXEL_SIZE);
+      ctx.fillRect(bx + 7 * ART_PIXEL_SIZE, by + 11 * ART_PIXEL_SIZE, 3 * ART_PIXEL_SIZE, ART_PIXEL_SIZE);
 
       // Pants
       ctx.fillStyle = '#1a1a5e';
-      ctx.fillRect(bx + 3 * P, by + 8 * P, 2 * P, 3 * P);
-      ctx.fillRect(bx + 7 * P, by + 8 * P, 2 * P, 3 * P);
+      ctx.fillRect(bx + 3 * ART_PIXEL_SIZE, by + 8 * ART_PIXEL_SIZE, 2 * ART_PIXEL_SIZE, 3 * ART_PIXEL_SIZE);
+      ctx.fillRect(bx + 7 * ART_PIXEL_SIZE, by + 8 * ART_PIXEL_SIZE, 2 * ART_PIXEL_SIZE, 3 * ART_PIXEL_SIZE);
 
       // Shirt
       ctx.fillStyle = '#00b4d8';
-      ctx.fillRect(bx + 3 * P, by + 4 * P, 6 * P, 4 * P);
+      ctx.fillRect(bx + 3 * ART_PIXEL_SIZE, by + 4 * ART_PIXEL_SIZE, 6 * ART_PIXEL_SIZE, 4 * ART_PIXEL_SIZE);
 
       // Arms
       ctx.fillStyle = '#f0c090';
-      ctx.fillRect(bx + P,     by + 4 * P, 2 * P, 4 * P);
-      ctx.fillRect(bx + 9 * P, by + 4 * P, 2 * P, 4 * P);
+      ctx.fillRect(bx + ART_PIXEL_SIZE,     by + 4 * ART_PIXEL_SIZE, 2 * ART_PIXEL_SIZE, 4 * ART_PIXEL_SIZE);
+      ctx.fillRect(bx + 9 * ART_PIXEL_SIZE, by + 4 * ART_PIXEL_SIZE, 2 * ART_PIXEL_SIZE, 4 * ART_PIXEL_SIZE);
 
       // Head
       ctx.fillStyle = '#f0c090';
-      ctx.fillRect(bx + 4 * P, by + 0 * P, 4 * P, 4 * P);
+      ctx.fillRect(bx + 4 * ART_PIXEL_SIZE, by + 0 * ART_PIXEL_SIZE, 4 * ART_PIXEL_SIZE, 4 * ART_PIXEL_SIZE);
 
       // Hair
       ctx.fillStyle = '#3d2b1f';
-      ctx.fillRect(bx + 4 * P, by + 0 * P, 4 * P, P);
-      ctx.fillRect(bx + 4 * P, by + P,     P,     P);
-      ctx.fillRect(bx + 7 * P, by + P,     P,     P);
+      ctx.fillRect(bx + 4 * ART_PIXEL_SIZE, by + 0 * ART_PIXEL_SIZE, 4 * ART_PIXEL_SIZE, ART_PIXEL_SIZE);
+      ctx.fillRect(bx + 4 * ART_PIXEL_SIZE, by + ART_PIXEL_SIZE,     ART_PIXEL_SIZE,     ART_PIXEL_SIZE);
+      ctx.fillRect(bx + 7 * ART_PIXEL_SIZE, by + ART_PIXEL_SIZE,     ART_PIXEL_SIZE,     ART_PIXEL_SIZE);
 
       // Eyes
       ctx.fillStyle = '#1a1a2e';
-      ctx.fillRect(bx + 5 * P, by + 1 * P, P, P);
-      ctx.fillRect(bx + 7 * P, by + 1 * P, P, P);
+      ctx.fillRect(bx + 5 * ART_PIXEL_SIZE, by + 1 * ART_PIXEL_SIZE, ART_PIXEL_SIZE, ART_PIXEL_SIZE);
+      ctx.fillRect(bx + 7 * ART_PIXEL_SIZE, by + 1 * ART_PIXEL_SIZE, ART_PIXEL_SIZE, ART_PIXEL_SIZE);
 
       // Neon badge pixel on shirt
       ctx.fillStyle = '#00f5ff';
-      ctx.fillRect(bx + 5 * P, by + 5 * P, 2 * P, P);
+      ctx.fillRect(bx + 5 * ART_PIXEL_SIZE, by + 5 * ART_PIXEL_SIZE, 2 * ART_PIXEL_SIZE, ART_PIXEL_SIZE);
 
       ctx.restore();
     }
@@ -567,10 +581,7 @@ import SectionTitle from './SectionTitle.astro';
         return;
       }
       // Only capture arrow keys when game section is in view to avoid scroll hijack
-      const prevent = isInView && (
-        e.key === 'ArrowUp' || e.key === 'ArrowDown' ||
-        e.key === 'ArrowLeft' || e.key === 'ArrowRight'
-      );
+      const prevent = isInView && (ARROW_KEYS as readonly string[]).includes(e.key);
       if (prevent) e.preventDefault();
 
       switch (e.key) {
