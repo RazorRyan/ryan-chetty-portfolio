@@ -47,7 +47,9 @@ const mainTagline =
         class="mx-auto aspect-square w-52 rounded-2xl border border-slate-200 object-cover shadow-lg transition-transform duration-300 dark:border-slate-700"
       />
       <div class="mt-5 space-y-3 rounded-xl border border-slate-200/80 bg-white/80 p-4 dark:border-slate-700 dark:bg-slate-900/80">
-        <p id="xp-status" class="text-sm font-semibold text-slate-700 dark:text-slate-200">🎮 Side Quest: Gain XP</p>
+        <p id="xp-status" aria-live="polite" aria-atomic="true" class="text-sm font-semibold text-slate-700 dark:text-slate-200">
+          🎮 Side Quest: Gain XP
+        </p>
         <div class="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
           <div id="xp-fill" class="h-full w-0 rounded-full bg-gradient-to-r from-brand-500 to-cyan-400 transition-all duration-300"></div>
         </div>
@@ -58,6 +60,7 @@ const mainTagline =
         <button
           id="xp-button"
           type="button"
+          aria-label="Gain XP. Current XP is 0 out of 100."
           class="w-full rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-brand-500"
         >
           +10 XP
@@ -75,12 +78,16 @@ const mainTagline =
   const xpLevel = document.getElementById('xp-level');
   const xpStatus = document.getElementById('xp-status');
   const gamePanel = document.getElementById('game-panel');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   const updateXp = () => {
     if (!xpFill || !xpLevel || !xpStatus) return;
     xpFill.style.width = `${xp}%`;
     xpLevel.textContent = `XP: ${xp} / 100`;
     xpStatus.textContent = xp >= 100 ? '✨ Quest Complete! Contact Ryan to collaborate.' : '🎮 Side Quest: Gain XP';
+    if (xpButton instanceof HTMLButtonElement) {
+      xpButton.setAttribute('aria-label', `Gain XP. Current XP is ${xp} out of 100.`);
+    }
   };
 
   xpButton?.addEventListener('click', () => {
@@ -88,14 +95,25 @@ const mainTagline =
     updateXp();
   });
 
-  gamePanel?.addEventListener('mousemove', (event) => {
-    const target = event.currentTarget;
-    if (!(target instanceof HTMLElement)) return;
-    const rect = target.getBoundingClientRect();
-    const rotateX = ((event.clientY - rect.top) / rect.height - 0.5) * -6;
-    const rotateY = ((event.clientX - rect.left) / rect.width - 0.5) * 6;
-    target.style.transform = `perspective(800px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
-  });
+  if (!prefersReducedMotion) {
+    let frameRequest = 0;
+    let targetX = 0;
+    let targetY = 0;
+
+    gamePanel?.addEventListener('mousemove', (event) => {
+      const target = event.currentTarget;
+      if (!(target instanceof HTMLElement)) return;
+      const rect = target.getBoundingClientRect();
+      targetX = ((event.clientY - rect.top) / rect.height - 0.5) * -6;
+      targetY = ((event.clientX - rect.left) / rect.width - 0.5) * 6;
+
+      if (frameRequest) return;
+      frameRequest = window.requestAnimationFrame(() => {
+        target.style.transform = `perspective(800px) rotateX(${targetX.toFixed(2)}deg) rotateY(${targetY.toFixed(2)}deg)`;
+        frameRequest = 0;
+      });
+    });
+  }
 
   gamePanel?.addEventListener('mouseleave', (event) => {
     const target = event.currentTarget;
