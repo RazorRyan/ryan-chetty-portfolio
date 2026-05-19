@@ -1263,6 +1263,7 @@ import SectionTitle from './SectionTitle.astro';
 
     function showWin(): void {
       state = 'won';
+      stopMusic();
       if (winXP)  winXP.textContent   = `TOTAL XP: ${xp}`;
       if (winEl)  winEl.style.display  = 'flex';
       if (hudEl)  hudEl.style.display  = 'none';
