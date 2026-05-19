@@ -26,8 +26,7 @@ import SectionTitle from './SectionTitle.astro';
       <!-- Sound toggle — lives INSIDE canvas wrapper so D-pad never covers it -->
       <button
         id="cq-sound"
-        class="pixel-label-xs absolute rounded border border-slate-700 text-slate-500 transition hover:border-slate-500 hover:text-slate-300"
-        style="bottom: 8px; right: 8px; z-index: 20; background: rgba(4,4,20,0.90); padding: 3px 7px;"
+        class="cq-sound-btn pixel-label-xs"
         aria-label="Toggle sound"
       >🔇 SFX</button>
 
@@ -126,8 +125,7 @@ import SectionTitle from './SectionTitle.astro';
       <!-- Mine action button -->
       <button
         id="cq-action"
-        class="cq-dpad"
-        style="width:3rem;height:3rem;font-size:1.15rem;border-color:rgba(255,215,0,0.55);background:rgba(255,215,0,0.08);color:rgba(255,215,0,0.9);"
+        class="cq-dpad cq-mine-btn"
         aria-label="Mine resource"
       >⛏</button>
     </div>
@@ -137,6 +135,22 @@ import SectionTitle from './SectionTitle.astro';
 </section>
 
 <style>
+  .cq-sound-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    z-index: 20;
+    background: rgba(4, 4, 20, 0.90);
+    padding: 3px 7px;
+    border-radius: 4px;
+    border: 1px solid #334155;
+    color: #64748b;
+    transition: border-color 120ms, color 120ms;
+  }
+  .cq-sound-btn:hover {
+    border-color: #64748b;
+    color: #cbd5e1;
+  }
   .cq-dpad {
     width: 2.25rem;
     height: 2.25rem;
@@ -158,6 +172,17 @@ import SectionTitle from './SectionTitle.astro';
     background: rgba(0, 245, 255, 0.22);
     transform: scale(0.9);
   }
+  .cq-mine-btn {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.15rem;
+    border-color: rgba(255, 215, 0, 0.55);
+    background: rgba(255, 215, 0, 0.08);
+    color: rgba(255, 215, 0, 0.9);
+  }
+  .cq-mine-btn:active {
+    background: rgba(255, 215, 0, 0.22);
+  }
 </style>
 
 <script>
@@ -177,7 +202,8 @@ import SectionTitle from './SectionTitle.astro';
   const ART        = 3;
   const ITEM_FONT  = '5px "Press Start 2P", monospace';
   const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'] as const;
-  const MINE_HITS  = 3; // swings required to collect a node
+  const MINE_HITS       = 3;   // swings required to collect a node
+  const SWING_DURATION_MS = 300; // ms for the pickaxe swing animation
 
   // ─── TILE IDS ─────────────────────────────────────────────────────────────────
   const TG = 0; // grass
@@ -813,7 +839,7 @@ import SectionTitle from './SectionTitle.astro';
       const wf = walkCount % 4 < 2;
 
       const swingAge  = ts - miningAnimStart;
-      const swinging  = miningAnim && swingAge < 300;
+      const swinging  = miningAnim && swingAge < SWING_DURATION_MS;
       const swingProg = swinging ? swingAge / 300 : 0;
       const swing     = swinging ? Math.sin(swingProg * Math.PI) : 0;
 
@@ -1022,7 +1048,7 @@ import SectionTitle from './SectionTitle.astro';
           if (bannerEl) bannerEl.style.display = 'none';
         }
         // End mining anim
-        if (miningAnim && ts - miningAnimStart > 300) miningAnim = false;
+        if (miningAnim && ts - miningAnimStart > SWING_DURATION_MS) miningAnim = false;
       }
       rafId = requestAnimationFrame(loop);
     }
