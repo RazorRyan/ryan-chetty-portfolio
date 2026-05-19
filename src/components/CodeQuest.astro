@@ -1264,11 +1264,11 @@ import SectionTitle from './SectionTitle.astro';
 
     function showPopup(idx: number): void {
       const item = ITEMS[idx];
-      if (popupSymbolEl) popupSymbolEl.textContent  = getPopupSymbol(item.title);
-      if (popupLabelEl)  popupLabelEl.textContent   = item.label;
-      if (popupLabelEl)  popupLabelEl.style.color   = item.color;
-      if (popupSubEl)    popupSubEl.textContent      = item.title;
-      if (popupMsgEl)    popupMsgEl.textContent      = item.msg;
+      if (popupSymbolEl) popupSymbolEl.textContent = getPopupSymbol(item.title);
+      if (popupLabelEl)  popupLabelEl.textContent  = item.label;
+      if (popupLabelEl)  popupLabelEl.style.color  = item.color;
+      if (popupSubEl)    popupSubEl.textContent     = item.title;
+      if (popupMsgEl)    popupMsgEl.textContent     = item.msg;
       if (popupInnerEl)  popupInnerEl.style.borderColor = item.color + '99';
       if (popupEl) {
         popupEl.style.display = 'flex';
