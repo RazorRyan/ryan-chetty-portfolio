@@ -93,24 +93,56 @@ const XP_INCREMENT = 10;
         <span class="pixel-label-sm text-neon-yellow">◆ LVL {PLAYER_LEVEL}</span>
       </div>
 
-      <!-- Anime SVG filter definition -->
+      <!-- Cartoon SVG filter pipeline -->
       <svg width="0" height="0" style="position:absolute;overflow:hidden;" aria-hidden="true">
         <defs>
-          <filter id="anime-filter" color-interpolation-filters="sRGB">
-            <!-- Boost saturation for vivid anime colours -->
-            <feColorMatrix type="saturate" values="1.9" result="vivid"/>
-            <!-- Posterise: reduce colour depth for cel-shading look -->
-            <feComponentTransfer in="vivid" result="cel">
-              <feFuncR type="discrete" tableValues="0 0.18 0.38 0.58 0.78 1"/>
-              <feFuncG type="discrete" tableValues="0 0.18 0.38 0.58 0.78 1"/>
-              <feFuncB type="discrete" tableValues="0 0.18 0.38 0.58 0.78 1"/>
+          <filter id="anime-filter" color-interpolation-filters="sRGB" x="0%" y="0%" width="100%" height="100%">
+            <!-- 1. Blur source to destroy photographic texture → smooth painted-look base -->
+            <feGaussianBlur stdDeviation="3.5" in="SourceGraphic" result="blurred"/>
+
+            <!-- 2. Posterize blurred image to only 4 flat tonal bands (cel-shading) -->
+            <feComponentTransfer in="blurred" result="cel">
+              <feFuncR type="discrete" tableValues="0 0.3 0.6 1"/>
+              <feFuncG type="discrete" tableValues="0 0.3 0.6 1"/>
+              <feFuncB type="discrete" tableValues="0 0.3 0.6 1"/>
             </feComponentTransfer>
-            <!-- Lift contrast for sharp anime outlines -->
-            <feColorMatrix in="cel" type="matrix"
-              values="1.25 0 0 0 -0.12
-                      0 1.25 0 0 -0.12
-                      0 0 1.25 0 -0.12
-                      0 0 0 1 0"/>
+
+            <!-- 3. Pump saturation to anime-vivid levels on the cel base -->
+            <feColorMatrix type="saturate" values="3.2" in="cel" result="vivid"/>
+
+            <!-- 4. Edge detection (Laplacian) on original source to find outlines -->
+            <feConvolveMatrix
+              order="3"
+              kernelMatrix="-1 -1 -1  -1 8 -1  -1 -1 -1"
+              in="SourceGraphic"
+              result="raw-edges"
+              edgeMode="none"
+              preserveAlpha="true"/>
+
+            <!-- 5. Convert detected edges to greyscale luminance -->
+            <feColorMatrix type="matrix"
+              values="0.33 0.33 0.33 0 0
+                      0.33 0.33 0.33 0 0
+                      0.33 0.33 0.33 0 0
+                      0    0    0    1 0"
+              in="raw-edges" result="grey-edges"/>
+
+            <!-- 6. Amplify and threshold so only strong lines survive -->
+            <feComponentTransfer in="grey-edges" result="thresh">
+              <feFuncR type="linear" slope="7" intercept="-0.35"/>
+              <feFuncG type="linear" slope="7" intercept="-0.35"/>
+              <feFuncB type="linear" slope="7" intercept="-0.35"/>
+            </feComponentTransfer>
+
+            <!-- 7. Invert: bright detected edges → dark ink outlines -->
+            <feComponentTransfer in="thresh" result="outlines">
+              <feFuncR type="linear" slope="-1" intercept="1"/>
+              <feFuncG type="linear" slope="-1" intercept="1"/>
+              <feFuncB type="linear" slope="-1" intercept="1"/>
+            </feComponentTransfer>
+
+            <!-- 8. Multiply dark outlines over vivid flat colour → cartoon! -->
+            <feBlend in="vivid" in2="outlines" mode="multiply"/>
           </filter>
         </defs>
       </svg>
@@ -126,7 +158,7 @@ const XP_INCREMENT = 10;
           alt={`GitHub profile photo of ${siteConfig.fullName}`}
           loading="eager"
           class="relative z-10 mx-auto aspect-square w-44 rounded-xl object-cover shadow-lg"
-          style="filter: url(#anime-filter) saturate(1.3) contrast(1.1);"
+          style="filter: url(#anime-filter);"
         />
         <!-- AI badge -->
         <div class="anime-badge absolute -right-2 -top-2 z-20 flex items-center gap-1 rounded border border-neon-purple/70 bg-arcade-black px-1.5 py-0.5" aria-hidden="true">
