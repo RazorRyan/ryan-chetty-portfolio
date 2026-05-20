@@ -93,15 +93,45 @@ const XP_INCREMENT = 10;
         <span class="pixel-label-sm text-neon-yellow">◆ LVL {PLAYER_LEVEL}</span>
       </div>
 
+      <!-- Anime SVG filter definition -->
+      <svg width="0" height="0" style="position:absolute;overflow:hidden;" aria-hidden="true">
+        <defs>
+          <filter id="anime-filter" color-interpolation-filters="sRGB">
+            <!-- Boost saturation for vivid anime colours -->
+            <feColorMatrix type="saturate" values="1.9" result="vivid"/>
+            <!-- Posterise: reduce colour depth for cel-shading look -->
+            <feComponentTransfer in="vivid" result="cel">
+              <feFuncR type="discrete" tableValues="0 0.18 0.38 0.58 0.78 1"/>
+              <feFuncG type="discrete" tableValues="0 0.18 0.38 0.58 0.78 1"/>
+              <feFuncB type="discrete" tableValues="0 0.18 0.38 0.58 0.78 1"/>
+            </feComponentTransfer>
+            <!-- Lift contrast for sharp anime outlines -->
+            <feColorMatrix in="cel" type="matrix"
+              values="1.25 0 0 0 -0.12
+                      0 1.25 0 0 -0.12
+                      0 0 1.25 0 -0.12
+                      0 0 0 1 0"/>
+          </filter>
+        </defs>
+      </svg>
+
       <!-- Avatar -->
       <div class="relative mx-auto w-fit">
-        <div class="absolute inset-0 rounded-xl bg-neon-cyan/10 blur-lg"></div>
+        <!-- Animated anime-style gradient border -->
+        <div class="anime-border-ring absolute -inset-0.5 rounded-xl" aria-hidden="true"></div>
+        <!-- Coloured glow behind avatar -->
+        <div class="absolute inset-0 rounded-xl blur-xl" style="background: linear-gradient(135deg, rgba(0,245,255,0.2), rgba(168,85,247,0.2), rgba(255,215,0,0.12));" aria-hidden="true"></div>
         <img
           src={githubProfileImageUrl}
           alt={`GitHub profile photo of ${siteConfig.fullName}`}
           loading="eager"
-          class="relative mx-auto aspect-square w-44 rounded-xl border border-neon-cyan/20 object-cover shadow-lg"
+          class="relative z-10 mx-auto aspect-square w-44 rounded-xl object-cover shadow-lg"
+          style="filter: url(#anime-filter) saturate(1.3) contrast(1.1);"
         />
+        <!-- AI badge -->
+        <div class="anime-badge absolute -right-2 -top-2 z-20 flex items-center gap-1 rounded border border-neon-purple/70 bg-arcade-black px-1.5 py-0.5" aria-hidden="true">
+          ✦ AI ANIME
+        </div>
       </div>
 
       <!-- XP mini-game -->

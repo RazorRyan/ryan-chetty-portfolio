@@ -783,3 +783,49 @@ html:not(.dark) .arcade-input:focus {
     filter: brightness(1.25);
   }
 }
+
+@keyframes anime-ring-spin {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   AI ANIME AVATAR — animated gradient border + badge
+═══════════════════════════════════════════════════ */
+
+.anime-border-ring {
+  background: linear-gradient(
+    270deg,
+    #00f5ff,
+    #a855f7,
+    #ffd700,
+    #ff6eb4,
+    #00f5ff
+  );
+  background-size: 300% 300%;
+  animation: anime-ring-spin 3s ease infinite;
+  z-index: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anime-border-ring {
+    animation: none;
+    background: linear-gradient(135deg, #00f5ff, #a855f7, #ffd700);
+  }
+}
+
+.anime-badge {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #c084fc;
+  line-height: 1.4;
+}
